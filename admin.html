@@ -1,0 +1,1939 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zaxzz Mail — Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --ink: #0b0d14; --ink-soft: #141824; --surface: #ffffff; --surface-soft: #f6f7fb;
+            --line: #e6e8f0; --line-strong: #d4d8e6; --brand: #2563eb; --brand-deep: #1d4ed8;
+            --brand-soft: #eff4ff; --muted: #6b7280; --muted-2: #9ca3af; --success: #10b981;
+            --success-soft: #f0fdf4; --warning: #f59e0b; --warning-soft: #fffbeb; --danger: #ef4444;
+            --danger-soft: #fef2f2; --purple: #7c3aed; --purple-soft: #f5f3ff;
+            --radius: 14px; --radius-sm: 10px;
+            --shadow-sm: 0 1px 2px rgba(16,24,40,0.04);
+            --shadow-md: 0 4px 14px rgba(16,24,40,0.06);
+        }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--surface-soft); color: var(--ink); min-height: 100vh;
+            font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+        }
+        .mono { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+
+        .login-view { display: flex; min-height: 100vh; background: #0b0d14; overflow: hidden; }
+        .login-view.hidden { display: none; }
+        .brand-panel {
+            display: none; flex: 1.1; position: relative;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(245,158,11,0.25), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(37,99,235,0.30), transparent 45%),
+                linear-gradient(160deg, #0b0d14 0%, #131829 55%, #0f1420 100%);
+            overflow: hidden; padding: 56px; flex-direction: column;
+            justify-content: space-between; color: #fff;
+        }
+        .brand-panel::before {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 75%);
+            pointer-events: none;
+        }
+        .brand-top { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; }
+        .brand-logo {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff; box-shadow: 0 8px 24px rgba(245,158,11,0.35);
+        }
+        .brand-top h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+        .brand-top h1 span { color: #fbbf24; }
+        .brand-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(245,158,11,0.15); border: 1px solid rgba(251,191,36,0.3);
+            color: #fbbf24; font-size: 11px; font-weight: 700;
+            padding: 4px 12px; border-radius: 20px; margin-left: 8px; letter-spacing: 0.5px;
+        }
+        .brand-mid { position: relative; z-index: 2; max-width: 460px; }
+        .brand-mid .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px; font-size: 12px;
+            font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+            color: #fbbf24; background: rgba(245,158,11,0.12);
+            border: 1px solid rgba(251,191,36,0.25); padding: 6px 14px;
+            border-radius: 30px; margin-bottom: 24px;
+        }
+        .brand-mid h2 { font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -1.2px; margin-bottom: 18px; }
+        .brand-mid h2 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brand-mid p { color: #94a3b8; font-size: 15px; line-height: 1.7; margin-bottom: 32px; }
+        .brand-features { display: flex; flex-direction: column; gap: 14px; }
+        .brand-feature {
+            display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; backdrop-filter: blur(8px);
+        }
+        .brand-feature .ico {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: rgba(245,158,11,0.18); color: #fbbf24;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .brand-feature .txt strong { display: block; font-size: 14px; font-weight: 700; color: #e2e8f0; }
+        .brand-feature .txt span { font-size: 12.5px; color: #7c8799; }
+        .brand-bottom {
+            position: relative; z-index: 2; display: flex; justify-content: space-between;
+            align-items: center; color: #64748b; font-size: 12.5px;
+        }
+        .form-panel {
+            flex: 1; background: var(--surface); display: flex; align-items: center;
+            justify-content: center; padding: 32px 24px; overflow-y: auto;
+        }
+        .form-inner { width: 100%; max-width: 400px; }
+        .form-mobile-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+        .form-mobile-brand .brand-logo { width: 40px; height: 40px; font-size: 18px; }
+        .form-mobile-brand h1 { font-size: 18px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+        .form-mobile-brand h1 span { color: #d97706; }
+        .form-head { margin-bottom: 28px; }
+        .form-head h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); margin-bottom: 6px; }
+        .form-head p { color: var(--muted); font-size: 14px; }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+        .field .wrap { position: relative; }
+        .field .wrap > i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--muted-2); font-size: 13.5px; pointer-events: none;
+        }
+        .field .wrap input {
+            width: 100%; padding: 12px 14px 12px 40px; background: var(--surface);
+            border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14.5px; color: var(--ink); outline: none; transition: all 0.2s;
+        }
+        .field .wrap input:focus { border-color: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,0.10); }
+        .field .wrap input::placeholder { color: var(--muted-2); }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--muted-2); cursor: pointer;
+            padding: 4px 6px; font-size: 13px;
+        }
+        .pw-toggle:hover { color: var(--ink); }
+        .alert {
+            display: none; padding: 12px 14px; border-radius: var(--radius-sm);
+            font-size: 13px; margin-bottom: 18px; align-items: flex-start;
+            gap: 10px; animation: slideDown 0.3s ease;
+        }
+        .alert.show { display: flex; }
+        .alert.error { background: var(--danger-soft); border: 1px solid #fecaca; color: #b91c1c; }
+        .alert.success { background: var(--success-soft); border: 1px solid #bbf7d0; color: #15803d; }
+        .alert i { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-submit {
+            width: 100%; padding: 13px 20px; background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #fff; border: none; border-radius: var(--radius-sm); font-family: inherit;
+            font-size: 14.5px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.30);
+        }
+        .btn-submit:hover { box-shadow: 0 8px 24px rgba(245,158,11,0.40); transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-submit .spinner {
+            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+        }
+        .btn-submit.loading .spinner { display: block; }
+        .btn-submit.loading .label { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .login-note { text-align: center; margin-top: 22px; font-size: 12.5px; color: var(--muted-2); }
+
+        .admin-view { display: none; min-height: 100vh; background: var(--surface-soft); }
+        .admin-view.active { display: block; }
+        .app-nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--line); padding: 0 20px;
+        }
+        .app-nav-inner {
+            max-width: 1200px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center; height: 64px; gap: 12px;
+        }
+        .app-brand { display: flex; align-items: center; gap: 10px; font-size: 17px; font-weight: 800; color: var(--ink); }
+        .app-brand .brand-logo {
+            width: 36px; height: 36px; font-size: 16px; border-radius: 10px;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+        }
+        .app-brand span { color: #d97706; }
+        .admin-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3);
+            color: #b45309; font-size: 10.5px; font-weight: 800;
+            padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; margin-left: 4px;
+        }
+        .btn-ghost {
+            background: transparent; border: 1.5px solid var(--line); color: var(--muted);
+            padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; font-family: inherit;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-ghost:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
+        .app-main { max-width: 1200px; margin: 0 auto; padding: 28px 20px 60px; }
+        .welcome-block { margin-bottom: 24px; }
+        .welcome-block h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.6px; }
+        .welcome-block h2 span { color: #d97706; }
+        .welcome-block p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px; margin-bottom: 24px;
+        }
+        .stat-box {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 18px; display: flex;
+            align-items: center; gap: 14px; transition: all 0.25s;
+        }
+        .stat-box:hover { border-color: #fcd34d; box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-box .ico {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+        }
+        .stat-box .ico.green { background: var(--success-soft); color: #16a34a; }
+        .stat-box .ico.blue { background: var(--brand-soft); color: var(--brand); }
+        .stat-box .ico.amber { background: var(--warning-soft); color: #d97706; }
+        .stat-box .ico.purple { background: var(--purple-soft); color: var(--purple); }
+        .stat-box .ico.red { background: var(--danger-soft); color: #dc2626; }
+        .stat-box .meta .num { font-size: 20px; font-weight: 800; display: block; letter-spacing: -0.3px; }
+        .stat-box .meta .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .tabs {
+            display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 4px; margin-bottom: 20px; overflow-x: auto;
+        }
+        .tabs button {
+            padding: 10px 18px; background: transparent; border: none;
+            border-radius: var(--radius-sm); font-family: inherit; font-size: 13.5px;
+            font-weight: 700; color: var(--muted); cursor: pointer; transition: all 0.2s;
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 8px;
+            position: relative;
+        }
+        .tabs button:hover { color: var(--ink); background: var(--surface-soft); }
+        .tabs button.active {
+            background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff;
+            box-shadow: 0 4px 12px rgba(245,158,11,0.25);
+        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .panel {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 22px; margin-bottom: 18px;
+        }
+        .panel-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+        }
+        .panel-head h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .panel-head h3 i { color: #d97706; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table thead { background: var(--surface-soft); }
+        table th {
+            padding: 11px 14px; text-align: left; font-weight: 700; color: var(--muted);
+            font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--line); white-space: nowrap;
+        }
+        table td {
+            padding: 12px 14px; border-bottom: 1px solid var(--line);
+            color: var(--ink); vertical-align: middle;
+        }
+        table tbody tr { transition: background 0.15s; }
+        table tbody tr:hover { background: var(--surface-soft); }
+        table tbody tr:last-child td { border-bottom: none; }
+        .empty-row { text-align: center; color: var(--muted); padding: 40px !important; font-size: 13.5px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px;
+            font-weight: 700; letter-spacing: 0.2px;
+        }
+        .badge.success { background: var(--success-soft); color: #15803d; }
+        .badge.pending { background: var(--warning-soft); color: #b45309; }
+        .badge.failed { background: var(--danger-soft); color: #b91c1c; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 6px; padding: 9px 16px; border: none; border-radius: 9px;
+            font-family: inherit; font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; letter-spacing: -0.1px;
+        }
+        .btn-primary { background: var(--brand); color: #fff; box-shadow: 0 3px 10px rgba(37,99,235,0.22); }
+        .btn-primary:hover { background: var(--brand-deep); transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: #fff; box-shadow: 0 3px 10px rgba(16,185,129,0.22); }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: #fff; box-shadow: 0 3px 10px rgba(239,68,68,0.22); }
+        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+        .btn-warning { background: var(--warning); color: #fff; box-shadow: 0 3px 10px rgba(245,158,11,0.22); }
+        .btn-warning:hover { background: #d97706; transform: translateY(-1px); }
+        .btn-xs { padding: 5px 10px; font-size: 11px; border-radius: 7px; }
+        .btn-block { width: 100%; }
+        .action-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        .form-field { margin-bottom: 14px; }
+        .form-field label {
+            display: block; font-size: 12.5px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .form-field input {
+            width: 100%; padding: 12px 16px; background: var(--surface-soft);
+            border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14px; color: var(--ink);
+            outline: none; transition: all 0.2s;
+        }
+        .form-field input:focus {
+            border-color: #f59e0b; box-shadow: 0 0 0 4px rgba(245,158,11,0.10); background: #fff;
+        }
+        .toast-stack {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; display: flex; flex-direction: column; gap: 8px;
+            align-items: center; pointer-events: none;
+        }
+        .toast {
+            background: var(--ink); color: #fff; padding: 12px 22px;
+            border-radius: 12px; font-size: 13.5px; font-weight: 600;
+            box-shadow: 0 12px 32px rgba(11,13,20,0.35);
+            display: flex; align-items: center; gap: 10px;
+            animation: toastIn 0.3s ease; max-width: 90vw; pointer-events: auto;
+        }
+        .toast.success { background: #065f46; }
+        .toast.error { background: #991b1b; }
+        .toast.warning { background: #92400e; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(11, 13, 20, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            padding: 20px;
+            animation: fadeInModal 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-box {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 440px;
+            padding: 24px;
+            color: var(--ink);
+            animation: popInModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes popInModal {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--line);
+        }
+        .modal-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .modal-icon.yellow {
+            background: var(--warning-soft);
+            color: #d97706;
+            border: 1px solid rgba(245,158,11,0.25);
+        }
+        .modal-icon.blue {
+            background: var(--brand-soft);
+            color: var(--brand);
+            border: 1px solid rgba(37,99,235,0.25);
+        }
+        .modal-icon.red {
+            background: var(--danger-soft);
+            color: var(--danger);
+            border: 1px solid rgba(239,68,68,0.25);
+        }
+        .modal-icon.green {
+            background: var(--success-soft);
+            color: #16a34a;
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+        .modal-title { flex: 1; }
+        .modal-title h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--ink);
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+        .modal-title p {
+            font-size: 12.5px;
+            color: var(--muted);
+        }
+
+        .modal-body { margin-bottom: 20px; }
+        .modal-body p {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .modal-detail {
+            background: var(--surface-soft);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .modal-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            font-size: 13.5px;
+            border-bottom: 1px solid var(--line);
+        }
+        .modal-detail-row:last-child { border-bottom: none; }
+        .modal-detail-row .lbl { color: var(--muted); }
+        .modal-detail-row .val { color: var(--ink); font-weight: 700; }
+        .modal-detail-row .val.amount { color: #d97706; font-weight: 800; font-size: 15px; }
+        .modal-detail-row .val.total { color: #dc2626; font-weight: 800; font-size: 15px; }
+        .modal-detail-row .val.method {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(17,142,234,0.1);
+            color: #118eea;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .modal-detail-row .val.method.gopay {
+            background: rgba(0,212,160,0.1);
+            color: #00aed6;
+        }
+
+        .modal-warning {
+            background: var(--warning-soft);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .modal-warning i {
+            color: #d97706;
+            font-size: 15px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .modal-warning span {
+            font-size: 12.5px;
+            color: #b45309;
+            line-height: 1.5;
+        }
+
+        .modal-input {
+            margin-bottom: 14px;
+        }
+        .modal-input label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .modal-input input,
+        .modal-input textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--surface);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--ink);
+            outline: none;
+            transition: all 0.2s;
+        }
+        .modal-input input:focus,
+        .modal-input textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px rgba(37,99,235,0.10);
+        }
+        .modal-input input::placeholder,
+        .modal-input textarea::placeholder {
+            color: var(--muted-2);
+        }
+        .modal-input textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .modal-input .hint {
+            font-size: 11.5px;
+            color: var(--muted-2);
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .modal-btn.primary {
+            background: var(--ink);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(11,13,20,0.25);
+        }
+        .modal-btn.primary:hover {
+            background: #1a1f2e;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(11,13,20,0.35);
+        }
+        .modal-btn.primary.danger {
+            background: var(--danger);
+            box-shadow: 0 4px 14px rgba(239,68,68,0.25);
+        }
+        .modal-btn.primary.danger:hover {
+            background: #dc2626;
+            box-shadow: 0 8px 20px rgba(239,68,68,0.35);
+        }
+        .modal-btn.primary.success {
+            background: var(--success);
+            box-shadow: 0 4px 14px rgba(16,185,129,0.25);
+        }
+        .modal-btn.primary.success:hover {
+            background: #059669;
+            box-shadow: 0 8px 20px rgba(16,185,129,0.35);
+        }
+        .modal-btn.primary.warning {
+            background: var(--warning);
+            box-shadow: 0 4px 14px rgba(245,158,11,0.25);
+        }
+        .modal-btn.primary.warning:hover {
+            background: #d97706;
+            box-shadow: 0 8px 20px rgba(245,158,11,0.35);
+        }
+        .modal-btn.primary:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .modal-btn.secondary {
+            background: transparent;
+            color: var(--muted);
+            border: 1.5px solid var(--line);
+        }
+        .modal-btn.secondary:hover {
+            background: var(--surface-soft);
+            color: var(--ink);
+        }
+
+        @media (min-width: 900px) {
+            .brand-panel { display: flex; }
+            .form-mobile-brand { display: none; }
+        }
+        @media (max-width: 899px) {
+            .login-view { background: var(--surface); }
+            .form-panel { padding: 28px 22px 40px; }
+        }
+        @media (max-width: 640px) {
+            .app-nav-inner { height: auto; padding: 12px 0; flex-wrap: wrap; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .stat-box { padding: 14px; gap: 10px; }
+            .stat-box .ico { width: 38px; height: 38px; font-size: 16px; }
+            .stat-box .meta .num { font-size: 17px; }
+            .panel { padding: 16px; }
+            .welcome-block h2 { font-size: 20px; }
+            .tabs button { padding: 8px 12px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-view" id="loginView">
+        <aside class="brand-panel">
+            <div class="brand-top">
+                <div class="brand-logo"><i class="fas fa-shield-halved"></i></div>
+                <h1>Zaxzz<span>Mail</span> <span class="brand-badge">ADMIN</span></h1>
+            </div>
+            <div class="brand-mid">
+                <div class="eyebrow"><i class="fas fa-lock"></i> Panel Administrator</div>
+                <h2>Akses penuh ke <em>sistem Zaxzz Mail</em>.</h2>
+                <p>Kelola stor Gmail, atur harga, ubah saldo user, ACC penarikan, dan pantau aktivitas platform dari satu dashboard terpusat.</p>
+                <div class="brand-features">
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-inbox"></i></div>
+                        <div class="txt">
+                            <strong>Kelola Stor Masuk</strong>
+                            <span>Terima atau tolak stor Gmail dengan satu klik</span>
+                        </div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-hand-holding-usd"></i></div>
+                        <div class="txt">
+                            <strong>ACC Penarikan</strong>
+                            <span>Proses penarikan saldo user dengan cepat</span>
+                        </div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-users"></i></div>
+                        <div class="txt">
+                            <strong>Manajemen User</strong>
+                            <span>Ubah saldo, ban, hapus, atau unban akun user</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="brand-bottom"><span>© 2026 Zaxzz Mail — Admin</span></div>
+        </aside>
+
+        <main class="form-panel">
+            <div class="form-inner">
+                <div class="form-mobile-brand">
+                    <div class="brand-logo"><i class="fas fa-shield-halved"></i></div>
+                    <h1>Zaxzz<span>Mail</span> Admin</h1>
+                </div>
+                <div class="form-head">
+                    <h2>Login Administrator</h2>
+                    <p>Masuk dengan akun admin untuk mengakses panel kontrol</p>
+                </div>
+                <div class="alert error" id="alertBox">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span id="alertText"></span>
+                </div>
+                <form id="loginForm">
+                    <div class="field">
+                        <label for="adminUser">Username</label>
+                        <div class="wrap">
+                            <input type="text" id="adminUser" placeholder="Username admin" autocomplete="username" required>
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="adminPass">Password</label>
+                        <div class="wrap">
+                            <input type="password" id="adminPass" placeholder="Password admin" autocomplete="current-password" required>
+                            <i class="fas fa-lock"></i>
+                            <button type="button" class="pw-toggle" onclick="togglePw('adminPass', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" id="loginBtn">
+                        <span class="label"><i class="fas fa-shield-halved"></i> Masuk ke Panel</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+                <div class="login-note">Akses terbatas untuk administrator resmi.</div>
+            </div>
+        </main>
+    </div>
+
+    <div class="admin-view" id="adminView">
+        <nav class="app-nav">
+            <div class="app-nav-inner">
+                <div class="app-brand">
+                    <div class="brand-logo"><i class="fas fa-shield-halved"></i></div>
+                    Zaxzz<span>Mail</span>
+                    <span class="admin-tag"><i class="fas fa-crown"></i> ADMIN</span>
+                </div>
+                <div>
+                    <button class="btn-ghost" onclick="openLogoutModal()">
+                        <i class="fas fa-right-from-bracket"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="app-main">
+            <div class="welcome-block">
+                <h2>Panel <span>Administrator</span> 🛡️</h2>
+                <p>Kelola semua aktivitas Zaxzz Mail dari sini</p>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="ico blue"><i class="fas fa-users"></i></div>
+                    <div class="meta">
+                        <span class="num" id="statUsers">0</span>
+                        <span class="lbl">Total User</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="ico amber"><i class="fas fa-clock"></i></div>
+                    <div class="meta">
+                        <span class="num" id="statPending">0</span>
+                        <span class="lbl">Stor Pending</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="ico red"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="meta">
+                        <span class="num" id="statWithdrawPending">0</span>
+                        <span class="lbl">WD Pending</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="ico green"><i class="fas fa-check-circle"></i></div>
+                    <div class="meta">
+                        <span class="num" id="statReceived">0</span>
+                        <span class="lbl">Stor Diterima</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <div class="ico purple"><i class="fas fa-coins"></i></div>
+                    <div class="meta">
+                        <span class="num" id="statTotalPaid">Rp 0</span>
+                        <span class="lbl">Total Dibayar</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="active" onclick="switchTab('stor', this)">
+                    <i class="fas fa-inbox"></i> Stor Masuk
+                </button>
+                <button onclick="switchTab('withdraw', this)">
+                    <i class="fas fa-hand-holding-usd"></i> Penarikan
+                    <span id="withdrawBadge" style="background:#ef4444;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px;display:none;">0</span>
+                </button>
+                <button onclick="switchTab('users', this)">
+                    <i class="fas fa-users"></i> Users
+                </button>
+                <button onclick="switchTab('settings', this)">
+                    <i class="fas fa-sliders"></i> Pengaturan
+                </button>
+            </div>
+
+            <div id="tabStor" class="tab-pane active">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-inbox"></i> Daftar Stor Masuk</h3>
+                        <button class="btn btn-success" onclick="openAcceptAllStorModal()">
+                            <i class="fas fa-check-double"></i> Terima Semua
+                        </button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Harga</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="storTable">
+                                <tr><td colspan="7" class="empty-row">Belum ada stor masuk</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabWithdraw" class="tab-pane">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-hand-holding-usd"></i> Permintaan Penarikan</h3>
+                        <button class="btn btn-success" onclick="openAcceptAllWithdrawModal()">
+                            <i class="fas fa-check-double"></i> ACC Semua
+                        </button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>User</th>
+                                    <th>Metode</th>
+                                    <th>Nomor</th>
+                                    <th>Nama</th>
+                                    <th>Jumlah</th>
+                                    <th>Fee</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawTable">
+                                <tr><td colspan="10" class="empty-row">Belum ada permintaan penarikan</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabUsers" class="tab-pane">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-users"></i> Daftar User Terdaftar</h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>WhatsApp</th>
+                                    <th>Saldo</th>
+                                    <th>Total Stor</th>
+                                    <th>Akun WD</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                <tr><td colspan="9" class="empty-row">Belum ada user</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tabSettings" class="tab-pane">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-sliders"></i> Pengaturan Global</h3>
+                    </div>
+                    <div class="form-field">
+                        <label><i class="fas fa-tag"></i> Harga per Gmail (Rp)</label>
+                        <input type="number" id="settingPrice" value="3800" min="100">
+                    </div>
+                    <div class="form-field">
+                        <label><i class="fas fa-percent"></i> Fee Penarikan (%)</label>
+                        <input type="number" id="settingFee" value="5" min="0" max="100">
+                    </div>
+                    <div class="form-field">
+                        <label><i class="fas fa-arrow-down"></i> Minimal Penarikan (Rp)</label>
+                        <input type="number" id="settingMinWithdraw" value="20000" min="1000">
+                    </div>
+                    <div class="form-field">
+                        <label><i class="fas fa-shop"></i> Nama Toko</label>
+                        <input type="text" id="settingStoreName" value="Zaxzz Mail">
+                    </div>
+                    <button class="btn btn-warning btn-block" onclick="saveSettings()">
+                        <i class="fas fa-save"></i> Simpan Pengaturan
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="balanceModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon yellow">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Ubah Saldo User</h3>
+                    <p id="balanceModalSubtitle">-</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Username</span>
+                        <span class="val" id="balanceUsername">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Saldo Saat Ini</span>
+                        <span class="val amount" id="balanceCurrent">Rp 0</span>
+                    </div>
+                </div>
+                <div class="modal-input">
+                    <label>Jumlah Perubahan</label>
+                    <input type="number" id="balanceInput" placeholder="Contoh: 50000 atau -10000">
+                    <div class="hint">Positif (+) untuk tambah, negatif (−) untuk kurangi</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeBalanceModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary" onclick="applyBalanceChange()">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteUserModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon red">
+                    <i class="fas fa-trash"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Hapus User Permanen</h3>
+                    <p>Tindakan ini tidak bisa dibatalkan</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Username</span>
+                        <span class="val" id="deleteUsername">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Email</span>
+                        <span class="val" id="deleteEmail">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Saldo</span>
+                        <span class="val amount" id="deleteBalance">Rp 0</span>
+                    </div>
+                </div>
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>User ini <strong>TIDAK BISA LOGIN LAGI</strong> setelah dihapus. Semua data stor dan penarikan user ini juga akan terhapus permanen.</span>
+                </div>
+                <div class="modal-input">
+                    <label>Ketik <strong id="deleteConfirmWord">-</strong> untuk konfirmasi</label>
+                    <input type="text" id="deleteConfirmInput" placeholder="Ketik username di sini...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeDeleteUserModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary danger" id="deleteUserBtn" onclick="confirmDeleteUser()" disabled>
+                    <i class="fas fa-trash"></i> Hapus Permanen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="acceptWdModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>ACC Penarikan</h3>
+                    <p>Setujui permintaan penarikan user</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Username</span>
+                        <span class="val" id="wdAcceptUsername">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Metode</span>
+                        <span class="val method" id="wdAcceptMethod">DANA</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Nomor Tujuan</span>
+                        <span class="val" id="wdAcceptPhone">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Nama Penerima</span>
+                        <span class="val" id="wdAcceptName">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Jumlah Penarikan</span>
+                        <span class="val amount" id="wdAcceptAmount">Rp 0</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Total Potong Saldo</span>
+                        <span class="val total" id="wdAcceptTotal">Rp 0</span>
+                    </div>
+                </div>
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>Saldo user akan dipotong <strong id="wdAcceptTotalText">Rp 0</strong> (termasuk fee). Pastikan data sudah benar sebelum ACC.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeAcceptWdModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary success" onclick="confirmAcceptWd()">
+                    <i class="fas fa-check"></i> ACC Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="rejectWdModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon red">
+                    <i class="fas fa-circle-xmark"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Tolak Penarikan</h3>
+                    <p>Berikan alasan penolakan</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Username</span>
+                        <span class="val" id="wdRejectUsername">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Jumlah</span>
+                        <span class="val amount" id="wdRejectAmount">Rp 0</span>
+                    </div>
+                </div>
+                <div class="modal-input">
+                    <label>Alasan Penolakan</label>
+                    <textarea id="rejectReasonInput" placeholder="Contoh: Data e-wallet tidak valid...">Ditolak oleh admin</textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeRejectWdModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary danger" onclick="confirmRejectWd()">
+                    <i class="fas fa-circle-xmark"></i> Tolak
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="acceptAllStorModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon green">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Terima Semua Stor</h3>
+                    <p>Setujui semua stor pending sekaligus</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Total Stor Pending</span>
+                        <span class="val amount" id="acceptAllStorCount">0 stor</span>
+                    </div>
+                </div>
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>Semua stor pending akan diterima dan saldo user bertambah secara otomatis.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeAcceptAllStorModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary success" onclick="confirmAcceptAllStor()">
+                    <i class="fas fa-check-double"></i> Terima Semua
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="acceptAllWdModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon green">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>ACC Semua Penarikan</h3>
+                    <p>Setujui semua permintaan penarikan sekaligus</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Total WD Pending</span>
+                        <span class="val amount" id="acceptAllWdCount">0 permintaan</span>
+                    </div>
+                </div>
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>Saldo semua user yang mengajukan akan dipotong otomatis. Permintaan dengan saldo kurang akan di-skip.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeAcceptAllWdModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary success" onclick="confirmAcceptAllWd()">
+                    <i class="fas fa-check-double"></i> ACC Semua
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon red">
+                    <i class="fas fa-right-from-bracket"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Keluar dari Panel?</h3>
+                    <p>Kamu akan keluar dari sesi admin</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Apakah kamu yakin ingin keluar dari panel administrator?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeLogoutModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary danger" onclick="confirmLogout()">
+                    <i class="fas fa-right-from-bracket"></i> Keluar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script>
+        // ============================================
+        // ZAXXZ MAIL — ADMIN PANEL v6 (SUPABASE)
+        // ============================================
+
+        const SUPABASE_URL = 'https://zdkediotcgptxfrrytyl.supabase.co/rest/v1';
+        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpka2VkaW90Y2dwdHhmcnJ5dHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4OTYwNDksImV4cCI6MjEwNzQ3MjA0OX0.hVMPTYk-nT88OAFRSzPF2sLHGfN8rgegxYetwAmh_2w';
+
+        const SB_HEADERS = {
+            'apikey': SUPABASE_ANON,
+            'Authorization': 'Bearer ' + SUPABASE_ANON,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
+
+        async function sbFetch(path, options = {}) {
+            const url = SUPABASE_URL + path;
+            const opts = {
+                ...options,
+                headers: { ...SB_HEADERS, ...(options.headers || {}) }
+            };
+            try {
+                const res = await fetch(url, opts);
+                const text = await res.text();
+                let data = null;
+                if (text) { try { data = JSON.parse(text); } catch { data = text; } }
+                if (!res.ok) {
+                    console.error('SB error:', res.status, data);
+                    return { ok: false, status: res.status, data };
+                }
+                return { ok: true, status: res.status, data };
+            } catch (err) {
+                console.error('SB fetch error:', err);
+                return { ok: false, status: 0, data: null, error: err.message };
+            }
+        }
+
+        const DB = {
+            get(k, d = null) {
+                try { const v = localStorage.getItem('zaxzz_' + k); return v ? JSON.parse(v) : d; }
+                catch { return d; }
+            },
+            set(k, v) { localStorage.setItem('zaxzz_' + k, JSON.stringify(v)); },
+            del(k) { localStorage.removeItem('zaxzz_' + k); }
+        };
+
+        const ADMIN_USERNAME = 'Zaxzz040';
+        const ADMIN_PASSWORD = 'Solop_123';
+
+        let pendingBalanceUserId = null;
+        let pendingDeleteUserId = null;
+        let pendingAcceptWdId = null;
+        let pendingRejectWdId = null;
+
+        let allUsers = [];
+        let allStor = [];
+        let allWithdraws = [];
+        let currentSettings = null;
+
+        function isUserTyping() {
+            const activeEl = document.activeElement;
+            if (!activeEl) return false;
+            if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA' && activeEl.tagName !== 'SELECT') return false;
+            return true;
+        }
+
+        function showLogin() {
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('adminView').classList.remove('active');
+        }
+        function showAdminPanel() {
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('adminView').classList.add('active');
+            initAdminPanel();
+        }
+
+        function togglePw(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            box.className = 'alert ' + type + ' show';
+            box.querySelector('i').className = type === 'success' ? 'fas fa-circle-check' : 'fas fa-circle-exclamation';
+            document.getElementById('alertText').textContent = msg;
+            clearTimeout(box._t);
+            box._t = setTimeout(() => box.classList.remove('show'), 4000);
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = loading;
+            btn.classList.toggle('loading', loading);
+        }
+
+        function showToast(msg, type = 'info') {
+            const stack = document.getElementById('toastStack');
+            const t = document.createElement('div');
+            t.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '');
+            t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-info'}"></i> ${msg}`;
+            stack.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(10px)';
+                setTimeout(() => t.remove(), 300);
+            }, 3000);
+        }
+
+        // ============================================
+        // SB HELPERS
+        // ============================================
+        async function sbGetAdmin(username) {
+            const r = await sbFetch(`/users?username=eq.${encodeURIComponent(username)}&limit=1`);
+            if (!r.ok || !Array.isArray(r.data)) return null;
+            return r.data[0] || null;
+        }
+
+        async function sbEnsureAdmin() {
+            let admin = await sbGetAdmin(ADMIN_USERNAME);
+            if (!admin) {
+                const res = await sbFetch('/users', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: ADMIN_USERNAME,
+                        email: 'admin@zaxzz.mail',
+                        phone: '08000000000',
+                        password: ADMIN_PASSWORD,
+                        role: 'admin',
+                        balance: 0,
+                        total_stor: 0,
+                        total_earning: 0,
+                        banned: false,
+                        wallets: [],
+                        joined: new Date().toISOString()
+                    })
+                });
+                if (res.ok) admin = Array.isArray(res.data) ? res.data[0] : res.data;
+            } else if (admin.password !== ADMIN_PASSWORD) {
+                await sbFetch(`/users?id=eq.${admin.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ password: ADMIN_PASSWORD })
+                });
+            }
+            return admin;
+        }
+
+        async function sbGetAllUsers() {
+            const r = await sbFetch('/users?order=joined.desc');
+            if (!r.ok || !Array.isArray(r.data)) return [];
+            return r.data;
+        }
+
+        async function sbGetAllStor() {
+            const r = await sbFetch('/stor?order=submitted.desc');
+            if (!r.ok || !Array.isArray(r.data)) return [];
+            return r.data;
+        }
+
+        async function sbGetAllWithdraws() {
+            const r = await sbFetch('/withdraws?order=requested_at.desc');
+            if (!r.ok || !Array.isArray(r.data)) return [];
+            return r.data;
+        }
+
+        async function sbGetSettings() {
+            const r = await sbFetch('/settings?id=eq.1&limit=1');
+            if (!r.ok || !Array.isArray(r.data) || r.data.length === 0) {
+                return { id: 1, pricePerGmail: 3800, withdrawFee: 5, minWithdraw: 20000, storeName: 'Zaxzz Mail' };
+            }
+            return r.data[0];
+        }
+
+        async function sbUpdateSettings(settings) {
+            const existing = await sbGetSettings();
+            if (existing.id) {
+                return await sbFetch('/settings?id=eq.1', {
+                    method: 'PATCH',
+                    body: JSON.stringify(settings)
+                });
+            } else {
+                return await sbFetch('/settings', {
+                    method: 'POST',
+                    body: JSON.stringify({ id: 1, ...settings })
+                });
+            }
+        }
+
+        async function sbUpdateUser(id, patch) {
+            const r = await sbFetch(`/users?id=eq.${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(patch)
+            });
+            if (!r.ok) return { ok: false, data: r.data };
+            return { ok: true, data: Array.isArray(r.data) ? r.data[0] : r.data };
+        }
+
+        async function sbUpdateStor(id, patch) {
+            return await sbFetch(`/stor?id=eq.${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(patch)
+            });
+        }
+
+        async function sbUpdateWithdraw(id, patch) {
+            return await sbFetch(`/withdraws?id=eq.${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(patch)
+            });
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUser').value.trim();
+            const password = document.getElementById('adminPass').value;
+
+            if (!username || !password) {
+                showAlert('Username dan password wajib diisi.');
+                return;
+            }
+
+            setLoading('loginBtn', true);
+
+            try {
+                await sbEnsureAdmin();
+                const user = await sbGetAdmin(username);
+
+                if (!user || user.password !== password || user.role !== 'admin') {
+                    setLoading('loginBtn', false);
+                    showAlert('Username atau password salah, atau bukan admin.');
+                    return;
+                }
+
+                DB.set('session', user);
+                setLoading('loginBtn', false);
+                showToast('Login admin berhasil!', 'success');
+                showAdminPanel();
+            } catch (err) {
+                setLoading('loginBtn', false);
+                showAlert('Gagal terhubung ke server.');
+                console.error(err);
+            }
+        });
+
+        // ============================================
+        // INIT ADMIN PANEL
+        // ============================================
+        async function initAdminPanel() {
+            await refreshAdminData();
+
+            if (window._adminInterval) clearInterval(window._adminInterval);
+            window._adminInterval = setInterval(async () => {
+                if (isUserTyping()) return;
+                await refreshAdminData();
+            }, 5000);
+        }
+
+        async function refreshAdminData() {
+            const [users, stor, withdraws, settings] = await Promise.all([
+                sbGetAllUsers(),
+                sbGetAllStor(),
+                sbGetAllWithdraws(),
+                sbGetSettings()
+            ]);
+
+            allUsers = users;
+            allStor = stor;
+            allWithdraws = withdraws;
+            currentSettings = settings;
+
+            renderStats();
+            renderStor();
+            renderWithdraw();
+            renderUsers();
+            loadSettings();
+        }
+
+        function switchTab(tab, el) {
+            document.querySelectorAll('.tab-pane').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            if (el) el.classList.add('active');
+            if (tab === 'withdraw') renderWithdraw();
+        }
+
+        function renderStats() {
+            const users = (allUsers || []).filter(u => u.role !== 'admin');
+            document.getElementById('statUsers').textContent = users.length;
+            document.getElementById('statPending').textContent = (allStor || []).filter(s => s.status === 'pending').length;
+            document.getElementById('statWithdrawPending').textContent = (allWithdraws || []).filter(w => w.status === 'pending').length;
+            document.getElementById('statReceived').textContent = (allStor || []).filter(s => s.status === 'received').length;
+
+            const totalPaid = (allStor || []).filter(s => s.status === 'received').reduce((sum, s) => sum + (s.price || 0), 0);
+            document.getElementById('statTotalPaid').textContent = 'Rp ' + totalPaid.toLocaleString('id-ID');
+        }
+
+        function renderStor() {
+            const tbody = document.getElementById('storTable');
+            const stor = allStor || [];
+
+            if (stor.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-row">Belum ada stor masuk</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = stor.map((s, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${s.username}</strong></td>
+                    <td class="mono" style="color:var(--brand);font-size:12.5px;">${s.email}</td>
+                    <td class="mono" style="color:var(--muted);font-size:12.5px;">${s.password}</td>
+                    <td style="font-weight:700;">Rp ${(s.price || 0).toLocaleString('id-ID')}</td>
+                    <td>
+                        <span class="badge ${s.status === 'received' ? 'success' : s.status === 'rejected' ? 'failed' : 'pending'}">
+                            ${s.status === 'received' ? '✓ Diterima' : s.status === 'rejected' ? '✕ Ditolak' : '⏳ Pending'}
+                        </span>
+                    </td>
+                    <td>
+                        ${s.status === 'pending' ? `
+                            <div class="action-group">
+                                <button class="btn btn-success btn-xs" onclick="acceptStor('${s.id}')" title="Terima">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger btn-xs" onclick="rejectStor('${s.id}')" title="Tolak">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        ` : '<span style="color:var(--muted-2);font-size:11.5px;">—</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function acceptStor(id) {
+            const item = (allStor || []).find(s => String(s.id) === String(id));
+            if (!item || item.status !== 'pending') return;
+
+            const upd = await sbUpdateStor(id, {
+                status: 'received',
+                received_at: new Date().toISOString()
+            });
+            if (!upd.ok) { showToast('Gagal terima stor.', 'error'); return; }
+
+            const user = (allUsers || []).find(u => String(u.id) === String(item.user_id));
+            if (user) {
+                const newBalance = (user.balance || 0) + (item.price || 0);
+                const newEarning = (user.total_earning || 0) + (item.price || 0);
+                await sbUpdateUser(user.id, { balance: newBalance, total_earning: newEarning });
+            }
+
+            await refreshAdminData();
+            showToast(`Stor ${item.email} diterima! +Rp ${(item.price || 0).toLocaleString('id-ID')}`, 'success');
+        }
+
+        async function rejectStor(id) {
+            const item = (allStor || []).find(s => String(s.id) === String(id));
+            if (!item || item.status !== 'pending') return;
+
+            const upd = await sbUpdateStor(id, {
+                status: 'rejected',
+                rejected_at: new Date().toISOString()
+            });
+            if (!upd.ok) { showToast('Gagal tolak stor.', 'error'); return; }
+
+            await refreshAdminData();
+            showToast(`Stor ${item.email} ditolak.`, 'warning');
+        }
+
+        function openAcceptAllStorModal() {
+            const pending = (allStor || []).filter(s => s.status === 'pending');
+            if (pending.length === 0) {
+                showToast('Tidak ada stor pending.', 'warning');
+                return;
+            }
+            document.getElementById('acceptAllStorCount').textContent = pending.length + ' stor';
+            document.getElementById('acceptAllStorModal').classList.add('active');
+        }
+        function closeAcceptAllStorModal() {
+            document.getElementById('acceptAllStorModal').classList.remove('active');
+        }
+        async function confirmAcceptAllStor() {
+            closeAcceptAllStorModal();
+            const pending = (allStor || []).filter(s => s.status === 'pending');
+            const now = new Date().toISOString();
+
+            for (const item of pending) {
+                await sbUpdateStor(item.id, { status: 'received', received_at: now });
+                const user = (allUsers || []).find(u => String(u.id) === String(item.user_id));
+                if (user) {
+                    const newBalance = (user.balance || 0) + (item.price || 0);
+                    const newEarning = (user.total_earning || 0) + (item.price || 0);
+                    await sbUpdateUser(user.id, { balance: newBalance, total_earning: newEarning });
+                }
+            }
+
+            await refreshAdminData();
+            showToast(`${pending.length} stor berhasil diterima!`, 'success');
+        }
+
+        // ============================================
+        // WITHDRAW
+        // ============================================
+        function renderWithdraw() {
+            const tbody = document.getElementById('withdrawTable');
+            const withdraws = allWithdraws || [];
+
+            const pendingCount = withdraws.filter(w => w.status === 'pending').length;
+            const badge = document.getElementById('withdrawBadge');
+            if (badge) {
+                badge.textContent = pendingCount;
+                badge.style.display = pendingCount > 0 ? 'inline-block' : 'none';
+            }
+
+            if (withdraws.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="empty-row">Belum ada permintaan penarikan</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = withdraws.map((w, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${w.username}</strong></td>
+                    <td>
+                        <span class="badge ${w.method === 'dana' ? 'success' : 'pending'}">
+                            ${w.method === 'dana' ? '💙 DANA' : '💚 GoPay'}
+                        </span>
+                    </td>
+                    <td class="mono" style="font-size:12.5px;">${w.phone}</td>
+                    <td style="font-size:12.5px;">${w.name}</td>
+                    <td style="font-weight:700;">Rp ${w.amount.toLocaleString('id-ID')}</td>
+                    <td style="font-size:12px;color:var(--muted);">Rp ${(w.fee || 0).toLocaleString('id-ID')}</td>
+                    <td style="font-weight:700;color:var(--danger);">Rp ${(w.total || w.amount).toLocaleString('id-ID')}</td>
+                    <td>
+                        <span class="badge ${w.status === 'accepted' ? 'success' : w.status === 'rejected' ? 'failed' : 'pending'}">
+                            ${w.status === 'accepted' ? '✓ Diterima' : w.status === 'rejected' ? '✕ Ditolak' : '⏳ Pending'}
+                        </span>
+                    </td>
+                    <td>
+                        ${w.status === 'pending' ? `
+                            <div class="action-group">
+                                <button class="btn btn-success btn-xs" onclick="openAcceptWdModal('${w.id}')" title="ACC">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger btn-xs" onclick="openRejectWdModal('${w.id}')" title="Tolak">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        ` : '<span style="color:var(--muted-2);font-size:11.5px;">—</span>'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAcceptWdModal(id) {
+            const wd = (allWithdraws || []).find(w => String(w.id) === String(id));
+            if (!wd || wd.status !== 'pending') return;
+
+            pendingAcceptWdId = id;
+            document.getElementById('wdAcceptUsername').textContent = wd.username;
+            document.getElementById('wdAcceptMethod').textContent = wd.method.toUpperCase();
+            document.getElementById('wdAcceptMethod').className = 'val method' + (wd.method === 'gopay' ? ' gopay' : '');
+            document.getElementById('wdAcceptPhone').textContent = wd.phone;
+            document.getElementById('wdAcceptName').textContent = wd.name;
+            document.getElementById('wdAcceptAmount').textContent = 'Rp ' + wd.amount.toLocaleString('id-ID');
+            document.getElementById('wdAcceptTotal').textContent = 'Rp ' + wd.total.toLocaleString('id-ID');
+            document.getElementById('wdAcceptTotalText').textContent = 'Rp ' + wd.total.toLocaleString('id-ID');
+            document.getElementById('acceptWdModal').classList.add('active');
+        }
+        function closeAcceptWdModal() {
+            document.getElementById('acceptWdModal').classList.remove('active');
+            pendingAcceptWdId = null;
+        }
+        async function confirmAcceptWd() {
+            if (!pendingAcceptWdId) return;
+            const id = pendingAcceptWdId;
+            closeAcceptWdModal();
+
+            const wd = (allWithdraws || []).find(w => String(w.id) === String(id));
+            if (!wd || wd.status !== 'pending') return;
+
+            const user = (allUsers || []).find(u => String(u.id) === String(wd.user_id));
+            if (!user) { showToast('User tidak ditemukan!', 'error'); return; }
+
+            if ((user.balance || 0) < wd.total) {
+                showToast(`Saldo user tidak cukup! Butuh Rp ${wd.total.toLocaleString('id-ID')}`, 'error');
+                return;
+            }
+
+            await sbUpdateUser(user.id, { balance: (user.balance || 0) - wd.total });
+            await sbUpdateWithdraw(id, {
+                status: 'accepted',
+                accepted_at: new Date().toISOString()
+            });
+
+            await refreshAdminData();
+            showToast(`✅ Penarikan ${wd.username} Rp ${wd.amount.toLocaleString('id-ID')} di-ACC!`, 'success');
+        }
+
+        function openRejectWdModal(id) {
+            const wd = (allWithdraws || []).find(w => String(w.id) === String(id));
+            if (!wd || wd.status !== 'pending') return;
+
+            pendingRejectWdId = id;
+            document.getElementById('wdRejectUsername').textContent = wd.username;
+            document.getElementById('wdRejectAmount').textContent = 'Rp ' + wd.amount.toLocaleString('id-ID');
+            document.getElementById('rejectReasonInput').value = 'Ditolak oleh admin';
+            document.getElementById('rejectWdModal').classList.add('active');
+        }
+        function closeRejectWdModal() {
+            document.getElementById('rejectWdModal').classList.remove('active');
+            pendingRejectWdId = null;
+        }
+        async function confirmRejectWd() {
+            if (!pendingRejectWdId) return;
+            const id = pendingRejectWdId;
+            const reason = document.getElementById('rejectReasonInput').value.trim() || 'Ditolak oleh admin';
+            closeRejectWdModal();
+
+            const wd = (allWithdraws || []).find(w => String(w.id) === String(id));
+            if (!wd || wd.status !== 'pending') return;
+
+            await sbUpdateWithdraw(id, {
+                status: 'rejected',
+                reason: reason,
+                rejected_at: new Date().toISOString()
+            });
+
+            await refreshAdminData();
+            showToast(`❌ Penarikan ${wd.username} ditolak.`, 'warning');
+        }
+
+        function openAcceptAllWithdrawModal() {
+            const pending = (allWithdraws || []).filter(w => w.status === 'pending');
+            if (pending.length === 0) {
+                showToast('Tidak ada penarikan pending.', 'warning');
+                return;
+            }
+            document.getElementById('acceptAllWdCount').textContent = pending.length + ' permintaan';
+            document.getElementById('acceptAllWdModal').classList.add('active');
+        }
+        function closeAcceptAllWdModal() {
+            document.getElementById('acceptAllWdModal').classList.remove('active');
+        }
+        async function confirmAcceptAllWd() {
+            closeAcceptAllWdModal();
+            const pending = (allWithdraws || []).filter(w => w.status === 'pending');
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const wd of pending) {
+                const user = (allUsers || []).find(u => String(u.id) === String(wd.user_id));
+                if (!user || (user.balance || 0) < wd.total) {
+                    failCount++;
+                    continue;
+                }
+                await sbUpdateUser(user.id, { balance: (user.balance || 0) - wd.total });
+                await sbUpdateWithdraw(wd.id, {
+                    status: 'accepted',
+                    accepted_at: new Date().toISOString()
+                });
+                successCount++;
+            }
+
+            await refreshAdminData();
+            showToast(`✅ ${successCount} penarikan di-ACC. ${failCount > 0 ? failCount + ' gagal (saldo kurang)' : ''}`, 'success');
+        }
+
+        // ============================================
+        // USERS
+        // ============================================
+        function renderUsers() {
+            const tbody = document.getElementById('usersTable');
+            const users = (allUsers || []).filter(u => u.role !== 'admin');
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="empty-row">Belum ada user terdaftar</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = users.map((u, i) => {
+                const wallets = u.wallets || [];
+                const hasWd = wallets.length > 0;
+                const wdBadge = hasWd
+                    ? `<span class="badge ${wallets[0].method === 'dana' ? 'success' : 'pending'}" style="font-size:10px;">${wallets[0].method === 'dana' ? '💙 DANA' : '💚 GoPay'}</span>`
+                    : `<span style="color:var(--muted-2);font-size:11px;">Belum set</span>`;
+                return `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><strong>${u.username}</strong></td>
+                    <td style="font-size:12.5px;">${u.email}</td>
+                    <td style="font-size:12.5px;">${u.phone}</td>
+                    <td style="color:var(--success);font-weight:700;">Rp ${(u.balance || 0).toLocaleString('id-ID')}</td>
+                    <td>${u.total_stor || 0}</td>
+                    <td>${wdBadge}</td>
+                    <td>
+                        <span class="badge ${u.banned ? 'failed' : 'success'}">
+                            ${u.banned ? '🚫 Banned' : '✓ Aktif'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn btn-primary btn-xs" onclick="openBalanceModal('${u.id}')" title="Ubah Saldo">
+                                <i class="fas fa-coins"></i>
+                            </button>
+                            <button class="btn ${u.banned ? 'btn-success' : 'btn-warning'} btn-xs" onclick="toggleBan('${u.id}')" title="${u.banned ? 'Unban' : 'Ban'}">
+                                <i class="fas ${u.banned ? 'fa-unlock' : 'fa-ban'}"></i>
+                            </button>
+                            <button class="btn btn-danger btn-xs" onclick="openDeleteUserModal('${u.id}')" title="Hapus User">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function openBalanceModal(userId) {
+            const user = (allUsers || []).find(u => String(u.id) === String(userId));
+            if (!user) return;
+
+            pendingBalanceUserId = userId;
+            document.getElementById('balanceUsername').textContent = user.username;
+            document.getElementById('balanceCurrent').textContent = 'Rp ' + (user.balance || 0).toLocaleString('id-ID');
+            document.getElementById('balanceInput').value = '';
+            document.getElementById('balanceModal').classList.add('active');
+            setTimeout(() => document.getElementById('balanceInput').focus(), 100);
+        }
+        function closeBalanceModal() {
+            document.getElementById('balanceModal').classList.remove('active');
+            pendingBalanceUserId = null;
+        }
+        async function applyBalanceChange() {
+            if (!pendingBalanceUserId) return;
+            const input = document.getElementById('balanceInput').value.trim();
+            if (!input) { showToast('Masukkan jumlah perubahan!', 'warning'); return; }
+
+            const num = parseInt(input);
+            if (isNaN(num)) { showToast('Masukkan angka yang valid!', 'error'); return; }
+
+            const user = (allUsers || []).find(u => String(u.id) === String(pendingBalanceUserId));
+            if (!user) return;
+
+            const oldBalance = user.balance || 0;
+            const newBalance = Math.max(0, oldBalance + num);
+
+            const res = await sbUpdateUser(user.id, { balance: newBalance });
+            if (!res.ok) { showToast('Gagal ubah saldo.', 'error'); return; }
+
+            await refreshAdminData();
+
+            const action = num >= 0 ? 'ditambah' : 'dikurangi';
+            showToast(`Saldo ${user.username} ${action} Rp ${Math.abs(num).toLocaleString('id-ID')}. Saldo baru: Rp ${newBalance.toLocaleString('id-ID')}`, 'success');
+
+            closeBalanceModal();
+        }
+
+        function openDeleteUserModal(userId) {
+            const user = (allUsers || []).find(u => String(u.id) === String(userId));
+            if (!user) return;
+
+            pendingDeleteUserId = userId;
+            document.getElementById('deleteUsername').textContent = user.username;
+            document.getElementById('deleteEmail').textContent = user.email;
+            document.getElementById('deleteBalance').textContent = 'Rp ' + (user.balance || 0).toLocaleString('id-ID');
+            document.getElementById('deleteConfirmWord').textContent = user.username;
+            document.getElementById('deleteConfirmInput').value = '';
+            document.getElementById('deleteUserBtn').disabled = true;
+            document.getElementById('deleteUserModal').classList.add('active');
+        }
+        function closeDeleteUserModal() {
+            document.getElementById('deleteUserModal').classList.remove('active');
+            pendingDeleteUserId = null;
+        }
+        document.getElementById('deleteConfirmInput')?.addEventListener('input', function() {
+            const user = (allUsers || []).find(u => String(u.id) === String(pendingDeleteUserId));
+            if (!user) return;
+            document.getElementById('deleteUserBtn').disabled = this.value.trim() !== user.username;
+        });
+        async function confirmDeleteUser() {
+            if (!pendingDeleteUserId) return;
+            const userId = pendingDeleteUserId;
+            const user = (allUsers || []).find(u => String(u.id) === String(userId));
+            if (!user) return;
+
+            await sbFetch(`/stor?user_id=eq.${userId}`, { method: 'DELETE' });
+            await sbFetch(`/withdraws?user_id=eq.${userId}`, { method: 'DELETE' });
+            const res = await sbFetch(`/users?id=eq.${userId}`, { method: 'DELETE' });
+
+            if (!res.ok) { showToast('Gagal hapus user.', 'error'); return; }
+
+            await refreshAdminData();
+            closeDeleteUserModal();
+            showToast(`User "${user.username}" berhasil dihapus permanen!`, 'error');
+        }
+
+        async function toggleBan(userId) {
+            const user = (allUsers || []).find(u => String(u.id) === String(userId));
+            if (!user) return;
+
+            const newBanned = !user.banned;
+            const res = await sbUpdateUser(user.id, { banned: newBanned });
+            if (!res.ok) { showToast('Gagal ubah status ban.', 'error'); return; }
+
+            await refreshAdminData();
+            showToast(
+                newBanned ? `${user.username} berhasil dibanned!` : `${user.username} berhasil di-unban!`,
+                newBanned ? 'error' : 'success'
+            );
+        }
+
+        // ============================================
+        // SETTINGS
+        // ============================================
+        function loadSettings() {
+            const s = currentSettings || { pricePerGmail: 3800, withdrawFee: 5, minWithdraw: 20000, storeName: 'Zaxzz Mail' };
+            document.getElementById('settingPrice').value = s.pricePerGmail || 3800;
+            document.getElementById('settingFee').value = s.withdrawFee || 5;
+            document.getElementById('settingMinWithdraw').value = s.minWithdraw || 20000;
+            document.getElementById('settingStoreName').value = s.storeName || 'Zaxzz Mail';
+        }
+
+        async function saveSettings() {
+            const price = parseInt(document.getElementById('settingPrice').value);
+            const fee = parseInt(document.getElementById('settingFee').value);
+            const minWd = parseInt(document.getElementById('settingMinWithdraw').value);
+            const name = document.getElementById('settingStoreName').value.trim();
+
+            if (!price || price < 100) { showToast('Harga minimal Rp 100!', 'warning'); return; }
+            if (isNaN(fee) || fee < 0 || fee > 100) { showToast('Fee harus antara 0-100%!', 'warning'); return; }
+            if (!minWd || minWd < 1000) { showToast('Minimal penarikan minimal Rp 1.000!', 'warning'); return; }
+
+            const res = await sbUpdateSettings({
+                pricePerGmail: price,
+                withdrawFee: fee,
+                minWithdraw: minWd,
+                storeName: name
+            });
+
+            if (!res.ok) { showToast('Gagal simpan pengaturan.', 'error'); return; }
+
+            currentSettings = { id: 1, pricePerGmail: price, withdrawFee: fee, minWithdraw: minWd, storeName: name };
+            showToast(`Pengaturan disimpan. Harga: Rp ${price.toLocaleString('id-ID')} | Min WD: Rp ${minWd.toLocaleString('id-ID')}`, 'success');
+        }
+
+        function openLogoutModal() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
+        function confirmLogout() {
+            DB.del('session');
+            window.location.reload();
+        }
+
+        ['balanceModal','deleteUserModal','acceptWdModal','rejectWdModal','acceptAllStorModal','acceptAllWdModal','logoutModal'].forEach(id => {
+            document.getElementById(id)?.addEventListener('click', function(e) {
+                if (e.target === this) this.classList.remove('active');
+            });
+        });
+
+        // INIT
+        (async function init() {
+            try {
+                await sbEnsureAdmin();
+                const session = DB.get('session');
+                if (session && session.role === 'admin') {
+                    const fresh = await sbGetAdmin(session.username);
+                    if (fresh && fresh.role === 'admin') {
+                        DB.set('session', fresh);
+                        showAdminPanel();
+                        return;
+                    }
+                }
+                showLogin();
+            } catch (e) {
+                console.error('Init error:', e);
+                showLogin();
+            }
+        })();
+
+        console.log('%c🔥 Zaxzz Mail — Admin Panel v6 (Supabase)', 'color:#f59e0b;font-weight:bold;font-size:14px;');
+    </script>
+</body>
+</html>

@@ -1,0 +1,3209 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0f1117">
+    <title>Zaxzz Mail — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --ink: #0b0d14; --surface: #ffffff; --surface-soft: #f6f7fb;
+            --line: #e6e8f0; --line-strong: #d4d8e6; --brand: #2563eb;
+            --brand-deep: #1d4ed8; --brand-soft: #eff4ff; --muted: #6b7280;
+            --muted-2: #9ca3af; --success: #10b981; --success-soft: #f0fdf4;
+            --warning: #f59e0b; --warning-soft: #fffbeb; --danger: #ef4444;
+            --danger-soft: #fef2f2; --purple: #7c3aed; --purple-soft: #f5f3ff;
+            --radius: 14px; --radius-sm: 10px;
+            --shadow-sm: 0 1px 2px rgba(16,24,40,0.04);
+            --shadow-md: 0 4px 14px rgba(16,24,40,0.06);
+        }
+        html, body { height: 100%; }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0b0d14; color: var(--ink); min-height: 100vh;
+            font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+        }
+        .mono { font-family: 'JetBrains Mono', 'Courier New', monospace; }
+        .auth-view { display: flex; min-height: 100vh; background: #0b0d14; }
+        .auth-view.hidden { display: none; }
+        .brand-panel {
+            display: none; flex: 1.1; position: relative;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(37,99,235,0.35), transparent 45%),
+                radial-gradient(circle at 85% 90%, rgba(99,102,241,0.30), transparent 45%),
+                linear-gradient(160deg, #0b0d14 0%, #131829 55%, #0f1420 100%);
+            overflow: hidden; padding: 56px; flex-direction: column;
+            justify-content: space-between; color: #fff;
+        }
+        .brand-panel::before {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 44px 44px;
+            mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 75%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 75%);
+            pointer-events: none;
+        }
+        .brand-top { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; }
+        .brand-logo {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, #6366f1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff; box-shadow: 0 8px 24px rgba(37,99,235,0.35);
+        }
+        .brand-top h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+        .brand-top h1 span { color: #93c5fd; }
+        .brand-mid { position: relative; z-index: 2; max-width: 460px; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 8px; font-size: 12px;
+            font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase;
+            color: #93c5fd; background: rgba(37,99,235,0.15);
+            border: 1px solid rgba(147,197,253,0.25); padding: 6px 14px;
+            border-radius: 30px; margin-bottom: 24px;
+        }
+        .brand-mid h2 { font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -1.2px; margin-bottom: 18px; }
+        .brand-mid h2 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #60a5fa, #a5b4fc);
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brand-mid p { color: #94a3b8; font-size: 15px; line-height: 1.7; margin-bottom: 32px; }
+        .brand-features { display: flex; flex-direction: column; gap: 14px; }
+        .brand-feature {
+            display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+        }
+        .brand-feature .ico {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: rgba(37,99,235,0.18); color: #60a5fa;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .brand-feature .txt strong { display: block; font-size: 14px; font-weight: 700; color: #e2e8f0; }
+        .brand-feature .txt span { font-size: 12.5px; color: #7c8799; }
+        .brand-bottom {
+            position: relative; z-index: 2; display: flex;
+            justify-content: space-between; align-items: center;
+            color: #64748b; font-size: 12.5px;
+        }
+        .brand-bottom .dots { display: flex; gap: 6px; }
+        .brand-bottom .dots i {
+            width: 6px; height: 6px; border-radius: 50%; background: #2563eb; display: block;
+        }
+        .brand-bottom .dots i:nth-child(2) { background: #4f46e5; }
+        .brand-bottom .dots i:nth-child(3) { background: #6366f1; }
+        .form-panel {
+            flex: 1; background: var(--surface); display: flex;
+            align-items: center; justify-content: center; padding: 32px 24px; overflow-y: auto;
+        }
+        .form-inner { width: 100%; max-width: 400px; }
+        .form-mobile-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+        .form-mobile-brand .brand-logo { width: 40px; height: 40px; font-size: 18px; }
+        .form-mobile-brand h1 { font-size: 18px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px; }
+        .form-mobile-brand h1 span { color: var(--brand); }
+        .form-head { margin-bottom: 28px; }
+        .form-head h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); margin-bottom: 6px; }
+        .form-head p { color: var(--muted); font-size: 14px; }
+        .switcher {
+            display: flex; background: var(--surface-soft); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); padding: 4px; margin-bottom: 24px; position: relative;
+        }
+        .switcher .thumb {
+            position: absolute; top: 4px; left: 4px;
+            width: calc(50% - 4px); height: calc(100% - 8px);
+            background: var(--surface); border-radius: 7px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1); z-index: 1;
+        }
+        .switcher[data-active="register"] .thumb { transform: translateX(100%); }
+        .switcher button {
+            flex: 1; position: relative; z-index: 2; background: transparent; border: none;
+            padding: 10px 0; font-family: inherit; font-size: 13.5px;
+            font-weight: 700; color: var(--muted); cursor: pointer; transition: color 0.3s;
+        }
+        .switcher button.active { color: var(--ink); }
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 7px; }
+        .field .wrap { position: relative; }
+        .field .wrap > i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: var(--muted-2); font-size: 13.5px; pointer-events: none;
+        }
+        .field .wrap input {
+            width: 100%; padding: 12px 14px 12px 40px; background: var(--surface);
+            border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14.5px; color: var(--ink); outline: none; transition: all 0.2s;
+        }
+        .field .wrap input:focus { border-color: var(--brand); box-shadow: 0 0 0 4px rgba(37,99,235,0.10); }
+        .field .wrap input::placeholder { color: var(--muted-2); }
+        .field .wrap input.invalid { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(239,68,68,0.08); }
+        .field .err {
+            display: none; font-size: 12px; color: var(--danger);
+            margin-top: 5px; align-items: center; gap: 5px;
+        }
+        .field .err.show { display: flex; }
+        .pw-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; color: var(--muted-2); cursor: pointer;
+            padding: 4px 6px; font-size: 13px;
+        }
+        .pw-toggle:hover { color: var(--ink); }
+        .strength { display: none; margin-top: 8px; }
+        .strength.show { display: block; }
+        .strength .bars { display: flex; gap: 4px; margin-bottom: 5px; }
+        .strength .bars i {
+            flex: 1; height: 3px; border-radius: 2px;
+            background: var(--line); transition: background 0.3s;
+        }
+        .strength .text { font-size: 11.5px; color: var(--muted); }
+        .strength[data-level="1"] .bars i:nth-child(1) { background: #ef4444; }
+        .strength[data-level="2"] .bars i:nth-child(1),
+        .strength[data-level="2"] .bars i:nth-child(2) { background: #f59e0b; }
+        .strength[data-level="3"] .bars i:nth-child(1),
+        .strength[data-level="3"] .bars i:nth-child(2),
+        .strength[data-level="3"] .bars i:nth-child(3) { background: #10b981; }
+        .strength[data-level="4"] .bars i { background: #10b981; }
+        .check-row { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0 22px; }
+        .check-row input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px; border: 1.5px solid var(--line-strong);
+            border-radius: 5px; cursor: pointer; flex-shrink: 0;
+            margin-top: 1px; position: relative; transition: all 0.2s; background: #fff;
+        }
+        .check-row input[type="checkbox"]:checked { background: var(--brand); border-color: var(--brand); }
+        .check-row input[type="checkbox"]:checked::after {
+            content: ''; position: absolute; left: 5px; top: 2px;
+            width: 5px; height: 9px; border: solid #fff;
+            border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
+        .check-row label {
+            font-size: 13px; color: var(--muted); line-height: 1.5;
+            cursor: pointer; user-select: none;
+        }
+        .check-row label a { color: var(--brand); font-weight: 600; text-decoration: none; }
+        .btn-submit {
+            width: 100%; padding: 13px 20px; background: var(--ink); color: #fff;
+            border: none; border-radius: var(--radius-sm); font-family: inherit;
+            font-size: 14.5px; font-weight: 700; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover { background: #1a1f2e; box-shadow: 0 8px 24px rgba(11,13,20,0.20); transform: translateY(-1px); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-submit .spinner {
+            width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+        }
+        .btn-submit.loading .spinner { display: block; }
+        .btn-submit.loading .label { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .alert {
+            display: none; padding: 12px 14px; border-radius: var(--radius-sm);
+            font-size: 13px; margin-bottom: 18px; align-items: flex-start;
+            gap: 10px; animation: slideDown 0.3s ease;
+        }
+        .alert.show { display: flex; }
+        .alert.error { background: var(--danger-soft); border: 1px solid #fecaca; color: #b91c1c; }
+        .alert.success { background: var(--success-soft); border: 1px solid #bbf7d0; color: #15803d; }
+        .alert i { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .divider {
+            display: flex; align-items: center; gap: 12px; margin: 22px 0;
+            color: var(--muted-2); font-size: 12px;
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+        .form-foot { text-align: center; margin-top: 26px; font-size: 12.5px; color: var(--muted-2); }
+
+        .dashboard-view { display: none; min-height: 100vh; background: var(--surface-soft); }
+        .dashboard-view.active { display: block; }
+        .app-nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--line); padding: 0 20px;
+        }
+        .app-nav-inner {
+            max-width: 1100px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center; height: 64px; gap: 12px;
+        }
+        .app-brand {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 17px; font-weight: 800; color: var(--ink); letter-spacing: -0.3px;
+        }
+        .app-brand .brand-logo { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+        .app-brand span { color: var(--brand); }
+        .app-nav-right { display: flex; align-items: center; gap: 10px; }
+        .balance-chip {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--success-soft); border: 1px solid #bbf7d0;
+            padding: 7px 16px; border-radius: 30px;
+            font-size: 13.5px; font-weight: 700; color: #15803d;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .balance-chip:hover { transform: scale(1.03); }
+        .balance-chip .lbl {
+            font-size: 11px; font-weight: 600; color: #16a34a;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-ghost {
+            background: transparent; border: 1.5px solid var(--line); color: var(--muted);
+            padding: 8px 16px; border-radius: 9px; font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; font-family: inherit;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-ghost:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-soft); }
+        .app-main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+        .welcome-block { margin-bottom: 24px; }
+        .welcome-block h2 {
+            font-size: 24px; font-weight: 800; letter-spacing: -0.6px; color: var(--ink);
+        }
+        .welcome-block h2 span { color: var(--brand); }
+        .welcome-block p { color: var(--muted); font-size: 14px; margin-top: 2px; }
+        .stats-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px; margin-bottom: 24px;
+        }
+        .stat-box {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 18px; display: flex;
+            align-items: center; gap: 14px; transition: all 0.25s;
+            cursor: pointer;
+        }
+        .stat-box:hover { border-color: #c7d2fe; box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-box .ico {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .stat-box .ico.green { background: var(--success-soft); color: #16a34a; }
+        .stat-box .ico.blue { background: var(--brand-soft); color: var(--brand); }
+        .stat-box .ico.amber { background: var(--warning-soft); color: #d97706; }
+        .stat-box .ico.purple { background: var(--purple-soft); color: var(--purple); }
+        .stat-box .meta .num { font-size: 20px; font-weight: 800; display: block; letter-spacing: -0.3px; }
+        .stat-box .meta .lbl { font-size: 11.5px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+        .panel {
+            background: var(--surface); border: 1px solid var(--line);
+            border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+        }
+        .panel-head {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+        }
+        .panel-head h3 {
+            font-size: 16px; font-weight: 800; letter-spacing: -0.2px;
+            display: flex; align-items: center; gap: 10px; color: var(--ink);
+        }
+        .panel-head h3 i { color: var(--brand); font-size: 15px; }
+        .panel-head .meta { font-size: 13px; color: var(--muted); }
+        .panel-head .meta strong { color: #15803d; }
+        .form-field { margin-bottom: 14px; }
+        .form-field label {
+            display: block; font-size: 12.5px; font-weight: 700; color: var(--ink);
+            margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .form-field input, .form-field textarea, .form-field select {
+            width: 100%; padding: 13px 16px; background: var(--surface-soft);
+            border: 1.5px solid var(--line); border-radius: var(--radius-sm);
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 13px; color: var(--ink); outline: none;
+            transition: all 0.2s; line-height: 1.6;
+        }
+        .form-field input, .form-field select { font-family: inherit; }
+        .form-field textarea {
+            resize: vertical; min-height: 120px;
+        }
+        .form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+            border-color: var(--brand); box-shadow: 0 0 0 4px rgba(37,99,235,0.10); background: #fff;
+        }
+        .form-field .hint { font-size: 11.5px; color: var(--muted-2); margin-top: 5px; }
+        .form-field .hint code {
+            background: var(--surface-soft); padding: 2px 6px; border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace; font-size: 11.5px; border: 1px solid var(--line);
+        }
+        .form-field .hint strong { color: var(--brand); }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 12px 22px; border: none; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; letter-spacing: -0.1px;
+        }
+        .btn-primary {
+            background: var(--brand); color: #fff; box-shadow: 0 4px 14px rgba(37,99,235,0.25);
+        }
+        .btn-primary:hover {
+            background: var(--brand-deep); box-shadow: 0 8px 20px rgba(37,99,235,0.35); transform: translateY(-1px);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-success {
+            background: var(--success); color: #fff; box-shadow: 0 4px 14px rgba(16,185,129,0.25);
+        }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-block { width: 100%; }
+
+        .stor-list { display: flex; flex-direction: column; gap: 8px; }
+        .stor-item {
+            display: flex; align-items: center; gap: 12px; padding: 13px 15px;
+            background: var(--surface-soft); border: 1px solid var(--line);
+            border-radius: var(--radius-sm); transition: all 0.2s;
+        }
+        .stor-item:hover { border-color: #c7d2fe; background: #fff; }
+        .stor-item .ico {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--brand-soft); color: var(--brand);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .stor-item .ico.dana { background: rgba(17,142,234,0.1); color: #118eea; }
+        .stor-item .ico.gopay { background: rgba(0,212,160,0.1); color: #00aed6; }
+        .stor-item .info { flex: 1; min-width: 0; }
+        .stor-item .info .addr {
+            font-family: 'JetBrains Mono', monospace; font-size: 13px;
+            font-weight: 700; color: var(--ink); word-break: break-all;
+        }
+        .stor-item .info .meta {
+            font-size: 11.5px; color: var(--muted); margin-top: 2px;
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px; font-size: 11px;
+            font-weight: 700; letter-spacing: 0.2px;
+        }
+        .badge.success { background: var(--success-soft); color: #15803d; }
+        .badge.pending { background: var(--warning-soft); color: #b45309; }
+        .badge.failed { background: var(--danger-soft); color: #b91c1c; }
+        .empty { text-align: center; padding: 40px 20px; color: var(--muted); }
+        .empty i { font-size: 42px; color: var(--line-strong); display: block; margin-bottom: 10px; }
+        .empty p { font-size: 13.5px; }
+        .toast-stack {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            z-index: 9999; display: flex; flex-direction: column;
+            gap: 8px; align-items: center; pointer-events: none;
+        }
+        .toast {
+            background: var(--ink); color: #fff; padding: 12px 22px;
+            border-radius: 12px; font-size: 13.5px; font-weight: 600;
+            box-shadow: 0 12px 32px rgba(11,13,20,0.35);
+            display: flex; align-items: center; gap: 10px;
+            animation: toastIn 0.3s ease; max-width: 90vw; pointer-events: auto;
+        }
+        .toast.success { background: #065f46; }
+        .toast.error { background: #991b1b; }
+        .toast.warning { background: #92400e; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        .wd-page {
+            display: none; min-height: 100vh; background: #0f1117;
+            color: #fff; padding: 0 16px 40px;
+        }
+        .wd-page.active { display: block; }
+
+        .wd-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0; position: sticky; top: 0;
+            background: #0f1117; z-index: 50; border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 16px;
+        }
+        .wd-header-left { display: flex; align-items: center; gap: 12px; }
+        .wd-header-left .back-btn {
+            width: 36px; height: 36px; border-radius: 50%; background: transparent;
+            border: none; color: #fff; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .wd-header-left .back-btn:hover { background: rgba(255,255,255,0.08); }
+        .wd-header-left h2 { font-size: 20px; font-weight: 700; color: #fff; }
+        .wd-header-right { display: flex; gap: 12px; }
+        .wd-header-right .icon-btn {
+            width: 36px; height: 36px; border-radius: 50%; background: transparent;
+            border: none; color: #d1d5db; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .wd-header-right .icon-btn:hover { background: rgba(255,255,255,0.08); }
+
+        .wd-card {
+            background: #1a1d26; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 16px; margin-bottom: 14px;
+        }
+        .wd-card-title {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .wd-card-title-left {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: #d1d5db;
+        }
+        .wd-card-title-left .bar {
+            width: 3px; height: 14px; background: #c8f000; border-radius: 2px;
+        }
+        .wd-card-title-right {
+            font-size: 12px; color: #9ca3af;
+        }
+
+        .wd-balance-big {
+            font-size: 32px; font-weight: 800; color: #2dd4bf;
+            font-family: 'JetBrains Mono', monospace; margin-bottom: 4px;
+        }
+        .wd-balance-sub {
+            font-size: 13px; color: #9ca3af; margin-bottom: 16px;
+        }
+        .wd-balance-sub strong { color: #d1d5db; font-weight: 700; }
+
+        .wd-input-wrap {
+            background: #0f1117; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 12px 16px; display: flex;
+            align-items: center; gap: 8px;
+        }
+        .wd-input-wrap .rp {
+            color: #9ca3af; font-size: 14px; font-weight: 600;
+        }
+        .wd-input-wrap input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: #fff; font-size: 14px; font-family: inherit;
+        }
+        .wd-input-wrap input::placeholder { color: #6b7280; }
+
+        .wd-hint-yellow {
+            font-size: 12px; color: #facc15; margin-top: 8px;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        .wd-wallet-list { display: flex; flex-direction: column; gap: 8px; }
+        .wd-wallet-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #0f1117; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px; padding: 12px 14px;
+        }
+        .wd-wallet-item-left { display: flex; align-items: center; gap: 12px; }
+        .wd-wallet-item-left .wallet-icon {
+            width: 40px; height: 40px; border-radius: 8px;
+            background: linear-gradient(135deg, #118eea, #0d6efd);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #fff; flex-shrink: 0;
+        }
+        .wd-wallet-item-left .wallet-icon.gopay {
+            background: linear-gradient(135deg, #00aed6, #00d4a0);
+        }
+        .wd-wallet-item-left .wallet-info .name {
+            font-size: 14px; font-weight: 700; color: #fff;
+        }
+        .wd-wallet-item-left .wallet-info .detail {
+            font-size: 12px; color: #9ca3af; margin-top: 2px;
+        }
+        .wd-wallet-item-right { display: flex; gap: 6px; }
+        .wd-wallet-item-right button {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            color: #d1d5db; font-size: 13px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .wd-wallet-item-right button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .wd-wallet-item-right button.delete:hover { background: rgba(239,68,68,0.15); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+        .wd-add-wallet {
+            border: 1.5px dashed rgba(255,255,255,0.2);
+            border-radius: 10px; padding: 14px; text-align: center;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; color: #d1d5db; font-size: 14px; font-weight: 600;
+            margin-top: 8px;
+        }
+        .wd-add-wallet:hover { border-color: #c8f000; color: #c8f000; background: rgba(200,240,0,0.03); }
+        .wd-add-wallet .plus { color: #c8f000; font-size: 18px; }
+
+        .wd-summary {
+            display: flex; justify-content: space-between;
+            padding: 12px 4px; font-size: 14px; color: #9ca3af;
+        }
+        .wd-summary .val { color: #d1d5db; font-weight: 600; }
+        .wd-summary .val.empty { color: #6b7280; }
+
+        .wd-submit-btn {
+            width: 100%; padding: 16px; background: #c8f000; color: #0f1117;
+            border: none; border-radius: 10px; font-family: inherit;
+            font-size: 15px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s; margin-top: 12px;
+        }
+        .wd-submit-btn:hover { background: #d4ff1a; transform: translateY(-1px); }
+        .wd-submit-btn:disabled { background: #6b7280; cursor: not-allowed; transform: none; }
+
+        .wd-note {
+            text-align: center; font-size: 12px; color: #6b7280;
+            margin-top: 12px; line-height: 1.5;
+        }
+
+        .wd-page-inner { display: none; }
+        .wd-page-inner.active { display: block; }
+
+        .wd-form-group { margin-bottom: 16px; }
+        .wd-form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #d1d5db; margin-bottom: 8px;
+        }
+        .wd-form-group .select-wrap { position: relative; }
+        .wd-form-group select {
+            width: 100%; padding: 14px 16px; background: #1a1d26;
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            color: #fff; font-size: 14px; font-family: inherit;
+            outline: none; cursor: pointer;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+        }
+        .wd-form-group select:focus { border-color: #c8f000; }
+        .wd-form-group select option { background: #1a1d26; color: #fff; }
+        .wd-form-group .select-wrap::after {
+            content: '\f0d7'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+            color: #c8f000; pointer-events: none;
+        }
+        .wd-form-group input {
+            width: 100%; padding: 14px 16px; background: #1a1d26;
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+            color: #fff; font-size: 14px; font-family: inherit; outline: none;
+            transition: all 0.2s;
+        }
+        .wd-form-group input:focus { border-color: #c8f000; }
+        .wd-form-group input::placeholder { color: #6b7280; }
+        .wd-form-group .hint-yellow {
+            font-size: 12px; color: #facc15; margin-top: 6px;
+        }
+
+        .wd-save-btn {
+            width: 100%; padding: 16px; background: #c8f000; color: #0f1117;
+            border: none; border-radius: 10px; font-family: inherit;
+            font-size: 15px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s; margin-top: 8px;
+        }
+        .wd-save-btn:hover { background: #d4ff1a; }
+        .wd-save-btn:disabled { background: #6b7280; cursor: not-allowed; }
+
+        .wd-history-card {
+            background: #1a1d26; border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px; padding: 16px; margin-bottom: 12px;
+        }
+        .wd-history-top {
+            display: flex; justify-content: space-between;
+            align-items: flex-start; margin-bottom: 12px;
+            padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .wd-history-order {
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .wd-history-order .no {
+            font-size: 13px; font-weight: 700; color: #fff;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .wd-history-order .no .dot-icon {
+            color: #c8f000; font-size: 10px;
+        }
+        .wd-history-order .date {
+            font-size: 12px; color: #6b7280;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .wd-history-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4);
+            color: #10b981; font-size: 12px; font-weight: 700;
+            padding: 6px 12px; border-radius: 8px;
+            white-space: nowrap;
+        }
+        .wd-history-status.pending {
+            background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.4);
+            color: #f59e0b;
+        }
+        .wd-history-status.rejected {
+            background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4);
+            color: #ef4444;
+        }
+        .wd-history-row {
+            display: flex; justify-content: space-between;
+            padding: 6px 0; font-size: 14px;
+        }
+        .wd-history-row .lbl { color: #9ca3af; }
+        .wd-history-row .val { color: #fff; font-weight: 600; }
+        .wd-history-row .val.amount { color: #facc15; font-size: 18px; font-weight: 800; }
+        .wd-history-row .val.fee { color: #f87171; }
+        .wd-history-row .val.wallet { color: #fff; font-size: 13px; }
+        .wd-history-empty {
+            text-align: center; padding: 60px 20px; color: #6b7280;
+        }
+        .wd-history-empty i {
+            font-size: 56px; color: #374151; display: block; margin-bottom: 12px;
+        }
+        .wd-history-empty p { font-size: 14px; }
+
+        .profile-page {
+            display: none; min-height: 100vh; background: #0f1117;
+            color: #fff; padding: 0 16px 40px;
+        }
+        .profile-page.active { display: block; }
+
+        .profile-hero {
+            background: linear-gradient(135deg, #1a1d26, #0f1117);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -20%;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(200,240,0,0.15), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .profile-avatar {
+            width: 72px; height: 72px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #c8f000, #7fbf00);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; font-weight: 900;
+            color: #0f1117;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 24px rgba(200,240,0,0.25);
+            position: relative; z-index: 2;
+        }
+        .profile-name {
+            font-size: 22px; font-weight: 800;
+            color: #fff; letter-spacing: -0.5px;
+            position: relative; z-index: 2;
+        }
+        .profile-username {
+            font-size: 13.5px;
+            color: #c8f000;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative; z-index: 2;
+            margin-top: 2px;
+        }
+        .profile-badges {
+            display: flex; gap: 8px; margin-top: 12px;
+            position: relative; z-index: 2;
+            flex-wrap: wrap;
+        }
+        .profile-badge {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #d1d5db;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .profile-badge.active {
+            background: rgba(200,240,0,0.12);
+            border-color: rgba(200,240,0,0.3);
+            color: #c8f000;
+        }
+
+        .profile-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .profile-stat-card {
+            background: #1a1d26;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .profile-stat-card .ico {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; margin-bottom: 4px;
+        }
+        .profile-stat-card .ico.yellow { background: rgba(200,240,0,0.12); color: #c8f000; }
+        .profile-stat-card .ico.blue { background: rgba(45,212,191,0.12); color: #2dd4bf; }
+        .profile-stat-card .ico.purple { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .profile-stat-card .ico.green { background: rgba(16,185,129,0.12); color: #10b981; }
+        .profile-stat-card .num {
+            font-size: 18px; font-weight: 800;
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.5px;
+        }
+        .profile-stat-card .lbl {
+            font-size: 11px; color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-menu {
+            background: #1a1d26;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .profile-menu-item:last-child { border-bottom: none; }
+        .profile-menu-item:hover { background: rgba(255,255,255,0.03); }
+        .profile-menu-item .icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .profile-menu-item .icon.yellow { background: rgba(200,240,0,0.12); color: #c8f000; }
+        .profile-menu-item .icon.blue { background: rgba(45,212,191,0.12); color: #2dd4bf; }
+        .profile-menu-item .icon.red { background: rgba(239,68,68,0.12); color: #ef4444; }
+        .profile-menu-item .icon.purple { background: rgba(168,85,247,0.12); color: #a855f7; }
+        .profile-menu-item .content { flex: 1; }
+        .profile-menu-item .content .title {
+            font-size: 14px; font-weight: 700; color: #fff;
+            margin-bottom: 2px;
+        }
+        .profile-menu-item .content .desc {
+            font-size: 12px; color: #6b7280;
+        }
+        .profile-menu-item .arrow {
+            color: #4b5563; font-size: 14px;
+        }
+
+        .rules-page {
+            display: none; min-height: 100vh; background: #0f1117;
+            color: #fff; padding: 0 16px 40px;
+        }
+        .rules-page.active { display: block; }
+
+        .rules-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0; position: sticky; top: 0;
+            background: #0f1117; z-index: 50;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 16px;
+        }
+        .rules-header-left { display: flex; align-items: center; gap: 12px; }
+        .rules-header-left .back-btn {
+            width: 36px; height: 36px; border-radius: 50%; background: transparent;
+            border: none; color: #fff; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .rules-header-left .back-btn:hover { background: rgba(255,255,255,0.08); }
+        .rules-header-left .titles h2 { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+        .rules-header-left .titles p { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+        .rules-header-right .keluar-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.35);
+            color: #f87171; font-size: 12px; font-weight: 700;
+            padding: 8px 14px; border-radius: 10px; cursor: pointer;
+            font-family: inherit; transition: all 0.2s;
+        }
+        .rules-header-right .keluar-btn:hover {
+            background: rgba(239,68,68,0.2); color: #fca5a5;
+        }
+
+        .rules-card {
+            background: #fff; border-radius: 18px; padding: 20px;
+            margin-bottom: 14px; color: #0b0d14;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+        }
+        .rules-card-head {
+            display: flex; align-items: center; gap: 14px;
+            padding-bottom: 14px; margin-bottom: 14px;
+            border-bottom: 1.5px solid #eef0f6;
+        }
+        .rules-card-head .icon-box {
+            width: 52px; height: 52px; border-radius: 14px;
+            background: linear-gradient(135deg, #1e3a8a, #1e40af);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 22px; flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(30,58,138,0.35);
+        }
+        .rules-card-head .head-txt .eyebrow {
+            font-size: 11px; font-weight: 800; letter-spacing: 1px;
+            color: #1e40af; text-transform: uppercase;
+        }
+        .rules-card-head .head-txt h3 {
+            font-size: 22px; font-weight: 800; color: #0b0d14;
+            letter-spacing: -0.5px; margin-top: 2px;
+        }
+
+        .rules-list { list-style: none; padding: 0; margin: 0; }
+        .rules-list li {
+            font-size: 14px; color: #1f2937; line-height: 1.65;
+            padding: 6px 0; display: flex; gap: 10px;
+        }
+        .rules-list li .num {
+            font-weight: 800; color: #1e40af; flex-shrink: 0;
+            min-width: 18px;
+        }
+        .rules-list li strong { color: #0b0d14; font-weight: 700; }
+        .rules-list li .example-block {
+            display: block; margin-top: 8px; padding: 10px 14px;
+            background: #f1f5ff; border-left: 3px solid #1e40af;
+            border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px; color: #1e3a8a; line-height: 1.8;
+            word-break: break-all;
+        }
+
+        .rules-lanjut {
+            background: #fff; border-radius: 16px; padding: 16px 18px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+            border: 1.5px solid transparent;
+        }
+        .rules-lanjut:hover { transform: translateY(-2px); border-color: #2563eb; }
+        .rules-lanjut-left { display: flex; align-items: center; gap: 14px; }
+        .rules-lanjut-left .ico {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 20px; flex-shrink: 0;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+        }
+        .rules-lanjut-left .txt .title {
+            font-size: 15px; font-weight: 800; color: #0b0d14;
+            letter-spacing: -0.2px;
+        }
+        .rules-lanjut-left .txt .sub {
+            font-size: 12px; color: #6b7280; margin-top: 2px;
+        }
+        .rules-lanjut .arrow {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: #f1f5ff; display: flex; align-items: center;
+            justify-content: center; color: #2563eb; font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .rules-gate {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 12px 14px; background: var(--brand-soft);
+            border: 1.5px solid #c7d2fe; border-radius: 12px;
+            margin-bottom: 14px;
+        }
+        .rules-gate input[type="checkbox"] {
+            appearance: none; -webkit-appearance: none;
+            width: 18px; height: 18px; border: 1.5px solid var(--line-strong);
+            border-radius: 5px; cursor: pointer; flex-shrink: 0;
+            margin-top: 1px; position: relative; transition: all 0.2s; background: #fff;
+        }
+        .rules-gate input[type="checkbox"]:checked { background: var(--brand); border-color: var(--brand); }
+        .rules-gate input[type="checkbox"]:checked::after {
+            content: ''; position: absolute; left: 5px; top: 2px;
+            width: 5px; height: 9px; border: solid #fff;
+            border-width: 0 2px 2px 0; transform: rotate(45deg);
+        }
+        .rules-gate label {
+            font-size: 13px; color: var(--ink); line-height: 1.5;
+            cursor: pointer; user-select: none; font-weight: 600;
+        }
+        .rules-gate label a {
+            color: var(--brand); font-weight: 700; text-decoration: none;
+            cursor: pointer;
+        }
+        .rules-gate label a:hover { text-decoration: underline; }
+        .rules-gate label code {
+            background: #fff; padding: 1px 5px; border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+            border: 1px solid var(--line);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            animation: fadeInModal 0.2s ease;
+        }
+        .modal-overlay.active { display: flex; }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-box {
+            background: #1a1d26;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            width: 100%;
+            max-width: 420px;
+            padding: 24px;
+            color: #fff;
+            animation: popInModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        @keyframes popInModal {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .modal-icon {
+            width: 48px; height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .modal-icon.yellow {
+            background: rgba(200, 240, 0, 0.15);
+            color: #c8f000;
+            border: 1px solid rgba(200, 240, 0, 0.3);
+        }
+        .modal-icon.blue {
+            background: rgba(45, 212, 191, 0.15);
+            color: #2dd4bf;
+            border: 1px solid rgba(45, 212, 191, 0.3);
+        }
+        .modal-icon.red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .modal-icon.purple {
+            background: rgba(168, 85, 247, 0.15);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+        .modal-title {
+            flex: 1;
+        }
+        .modal-title h3 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+        .modal-title p {
+            font-size: 12.5px;
+            color: #9ca3af;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        .modal-body p {
+            font-size: 13.5px;
+            color: #d1d5db;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .modal-detail {
+            background: #0f1117;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .modal-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 7px 0;
+            font-size: 13.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .modal-detail-row:last-child { border-bottom: none; }
+        .modal-detail-row .lbl { color: #9ca3af; }
+        .modal-detail-row .val { color: #fff; font-weight: 600; }
+        .modal-detail-row .val.amount { color: #facc15; font-weight: 800; font-size: 15px; }
+        .modal-detail-row .val.fee { color: #f87171; }
+        .modal-detail-row .val.total { color: #c8f000; font-weight: 800; font-size: 15px; }
+        .modal-detail-row .val.method {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(17, 142, 234, 0.15);
+            color: #60a5fa;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        .modal-detail-row .val.method.gopay {
+            background: rgba(0, 212, 160, 0.15);
+            color: #34d399;
+        }
+
+        .modal-warning {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+        .modal-warning i {
+            color: #facc15;
+            font-size: 15px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .modal-warning span {
+            font-size: 12.5px;
+            color: #fcd34d;
+            line-height: 1.5;
+        }
+
+        .modal-input {
+            margin-bottom: 14px;
+        }
+        .modal-input label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .modal-input input,
+        .modal-input textarea {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0f1117;
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .modal-input input:focus,
+        .modal-input textarea:focus {
+            border-color: #c8f000;
+            box-shadow: 0 0 0 4px rgba(200,240,0,0.10);
+        }
+        .modal-input input::placeholder,
+        .modal-input textarea::placeholder {
+            color: #6b7280;
+        }
+        .modal-input textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .modal-input .hint {
+            font-size: 11.5px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .modal-btn.primary {
+            background: #c8f000;
+            color: #0f1117;
+            box-shadow: 0 4px 14px rgba(200, 240, 0, 0.25);
+        }
+        .modal-btn.primary:hover {
+            background: #d4ff1a;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(200, 240, 0, 0.35);
+        }
+        .modal-btn.primary:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #d1d5db;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .modal-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        .modal-btn.danger {
+            background: #ef4444;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+        }
+        .modal-btn.danger:hover {
+            background: #dc2626;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.35);
+        }
+        .modal-btn.danger:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .guide-step {
+            display: flex;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .guide-step:last-child { border-bottom: none; }
+        .guide-step-num {
+            width: 26px; height: 26px;
+            border-radius: 8px;
+            background: rgba(200,240,0,0.15);
+            color: #c8f000;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800;
+            flex-shrink: 0;
+        }
+        .guide-step-content strong {
+            display: block;
+            font-size: 13.5px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .guide-step-content span {
+            font-size: 12.5px;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+        .guide-step-content code {
+            background: rgba(255,255,255,0.06);
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11.5px;
+            color: #c8f000;
+        }
+
+        @media (min-width: 900px) {
+            .brand-panel { display: flex; }
+            .form-mobile-brand { display: none; }
+        }
+        @media (max-width: 899px) {
+            .auth-view { background: var(--surface); }
+            .form-panel { padding: 28px 22px 40px; }
+            .form-inner { max-width: 420px; }
+        }
+        @media (max-width: 640px) {
+            .app-nav-inner { height: auto; padding: 12px 0; flex-wrap: wrap; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .stat-box { padding: 14px; gap: 10px; }
+            .stat-box .ico { width: 38px; height: 38px; font-size: 16px; }
+            .stat-box .meta .num { font-size: 17px; }
+            .panel { padding: 18px; }
+            .welcome-block h2 { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-view" id="authView">
+        <aside class="brand-panel">
+            <div class="brand-top">
+                <div class="brand-logo"><i class="fas fa-envelope"></i></div>
+                <h1>Zaxzz<span>Mail</span></h1>
+            </div>
+            <div class="brand-mid">
+                <div class="eyebrow"><i class="fas fa-bolt"></i> Platform Gmail Terpercaya</div>
+                <h2>Jual beli Gmail <em>tanpa ribet</em>, dibayar instan.</h2>
+                <p>Stor Gmail kamu, dapatkan saldo langsung setelah diverifikasi. Proses cepat, aman, dan transparan.</p>
+                <div class="brand-features">
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-bolt"></i></div>
+                        <div class="txt">
+                            <strong>Verifikasi Instan</strong>
+                            <span>Stor langsung diproses kurang dari 5 menit</span>
+                        </div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-shield-halved"></i></div>
+                        <div class="txt">
+                            <strong>Keamanan Terjamin</strong>
+                            <span>Data kamu terenkripsi end-to-end</span>
+                        </div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="ico"><i class="fas fa-wallet"></i></div>
+                        <div class="txt">
+                            <strong>Pencairan Mudah</strong>
+                            <span>Tarik saldo ke DANA, OVO, GoPay</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="brand-bottom">
+                <span>© 2026 Zaxzz Mail</span>
+                <div class="dots"><i></i><i></i><i></i></div>
+            </div>
+        </aside>
+
+        <main class="form-panel">
+            <div class="form-inner">
+                <div class="form-mobile-brand">
+                    <div class="brand-logo"><i class="fas fa-envelope"></i></div>
+                    <h1>Zaxzz<span>Mail</span></h1>
+                </div>
+                <div class="form-head">
+                    <h2 id="formTitle">Selamat datang kembali</h2>
+                    <p id="formSubtitle">Masuk ke akun kamu untuk mulai stor Gmail</p>
+                </div>
+                <div class="alert error" id="alertBox">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <span id="alertText"></span>
+                </div>
+                <div class="switcher" id="switcher" data-active="login">
+                    <div class="thumb"></div>
+                    <button type="button" class="active" id="btnLogin" onclick="switchMode('login')">Masuk</button>
+                    <button type="button" id="btnRegister" onclick="switchMode('register')">Daftar</button>
+                </div>
+
+                <form id="loginForm" autocomplete="on">
+                    <div class="field">
+                        <label for="loginUser">Username</label>
+                        <div class="wrap">
+                            <input type="text" id="loginUser" placeholder="Masukkan username" autocomplete="username" required>
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="loginPass">Password</label>
+                        <div class="wrap">
+                            <input type="password" id="loginPass" placeholder="Masukkan password" autocomplete="current-password" required>
+                            <i class="fas fa-lock"></i>
+                            <button type="button" class="pw-toggle" onclick="togglePw('loginPass', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="check-row">
+                        <input type="checkbox" id="rememberMe" checked>
+                        <label for="rememberMe">Ingat saya di perangkat ini</label>
+                    </div>
+                    <button type="submit" class="btn-submit" id="loginBtn">
+                        <span class="label">Masuk ke Akun</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <form id="registerForm" style="display:none;" autocomplete="on">
+                    <div class="field">
+                        <label for="regUser">Username</label>
+                        <div class="wrap">
+                            <input type="text" id="regUser" placeholder="Pilih username unik" autocomplete="username" required>
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="err" id="errUser"><i class="fas fa-circle-exclamation"></i><span></span></div>
+                    </div>
+                    <div class="field">
+                        <label for="regEmail">Email Aktif</label>
+                        <div class="wrap">
+                            <input type="email" id="regEmail" placeholder="nama@email.com" autocomplete="email" required>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="err" id="errEmail"><i class="fas fa-circle-exclamation"></i><span></span></div>
+                    </div>
+                    <div class="field">
+                        <label for="regPhone">Nomor WhatsApp</label>
+                        <div class="wrap">
+                            <input type="tel" id="regPhone" placeholder="08xxxxxxxxxx" autocomplete="tel" required>
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="err" id="errPhone"><i class="fas fa-circle-exclamation"></i><span></span></div>
+                    </div>
+                    <div class="field">
+                        <label for="regPass">Password</label>
+                        <div class="wrap">
+                            <input type="password" id="regPass" placeholder="Minimal 6 karakter" autocomplete="new-password" required>
+                            <i class="fas fa-lock"></i>
+                            <button type="button" class="pw-toggle" onclick="togglePw('regPass', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="strength" id="strength">
+                            <div class="bars"><i></i><i></i><i></i><i></i></div>
+                            <div class="text" id="strengthText">Kekuatan password</div>
+                        </div>
+                    </div>
+                    <div class="check-row">
+                        <input type="checkbox" id="agreeTerms" required>
+                        <label for="agreeTerms">Saya setuju dengan <a href="#" onclick="return false;">Syarat & Ketentuan</a> serta <a href="#" onclick="return false;">Kebijakan Privasi</a> Zaxzz Mail.</label>
+                    </div>
+                    <button type="submit" class="btn-submit" id="registerBtn">
+                        <span class="label">Buat Akun Sekarang</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <div class="divider">atau</div>
+                <div class="form-foot">🔒 Dilindungi enkripsi end-to-end</div>
+            </div>
+        </main>
+    </div>
+
+    <div class="dashboard-view" id="dashboardView">
+        <nav class="app-nav">
+            <div class="app-nav-inner">
+                <div class="app-brand">
+                    <div class="brand-logo"><i class="fas fa-envelope"></i></div>
+                    Zaxzz<span>Mail</span>
+                </div>
+                <div class="app-nav-right">
+                    <div class="balance-chip" onclick="openWithdraw()">
+                        <i class="fas fa-wallet"></i>
+                        <span id="navBalance">Rp 0</span>
+                    </div>
+                    <button class="btn-ghost" onclick="openProfile()" style="border-color:var(--brand);color:var(--brand);">
+                        <i class="fas fa-user"></i> Profil
+                    </button>
+                    <button class="btn-ghost" onclick="logout()">
+                        <i class="fas fa-right-from-bracket"></i> Keluar
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="app-main">
+            <div id="viewMain" class="app-view">
+                <div class="welcome-block">
+                    <h2>Halo, <span id="welcomeName">User</span> 👋</h2>
+                    <p>Selamat datang di Zaxzz Mail — stor Gmail kamu sekarang</p>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-box" onclick="openWithdraw()">
+                        <div class="ico green"><i class="fas fa-wallet"></i></div>
+                        <div class="meta">
+                            <span class="num" id="statBalance">Rp 0</span>
+                            <span class="lbl">Saldo • Tarik →</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="ico blue"><i class="fas fa-envelope"></i></div>
+                        <div class="meta">
+                            <span class="num" id="statStor">0</span>
+                            <span class="lbl">Total Stor</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="ico amber"><i class="fas fa-clock"></i></div>
+                        <div class="meta">
+                            <span class="num" id="statPending">0</span>
+                            <span class="lbl">Pending</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="ico purple"><i class="fas fa-check-circle"></i></div>
+                        <div class="meta">
+                            <span class="num" id="statReceived">0</span>
+                            <span class="lbl">Diterima</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-paper-plane"></i> Stor Gmail</h3>
+                        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                            <button type="button" class="btn-ghost" style="border-color:var(--brand);color:var(--brand);padding:6px 12px;font-size:12px;" onclick="openRules()">
+                                <i class="fas fa-clipboard-list"></i> Rules
+                            </button>
+                            <span class="meta">Harga per Gmail: <strong id="pricePerGmail">Rp 3.800</strong></span>
+                        </div>
+                    </div>
+                    <form id="storForm">
+                        <div class="rules-gate">
+                            <input type="checkbox" id="agreeRules" required>
+                            <label for="agreeRules">
+                                Saya sudah membaca dan menyetujui
+                                <a onclick="openRules(); return false;">Rules Platform</a>
+                                (akun baru, format <code>email|password</code>, nama gmail diakhiri <strong>zaxzz</strong>).
+                            </label>
+                        </div>
+                        <div class="form-field">
+                            <label>Daftar Gmail (1 per baris)</label>
+                            <textarea id="storEmails" placeholder="contoh1zaxzz@gmail.com|password1&#10;contoh2zaxzz@gmail.com|password2&#10;contoh3zaxzz@gmail.com|password3" required></textarea>
+                            <div class="hint">Format: <code>email|password</code> — 1 Gmail per baris. Wajib akhiran <strong>zaxzz</strong></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="storBtn">
+                            <i class="fas fa-paper-plane"></i> Kirim Stor
+                        </button>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <h3><i class="fas fa-clock-rotate-left"></i> Riwayat Stor</h3>
+                    </div>
+                    <div id="storHistory" class="stor-list">
+                        <div class="empty">
+                            <i class="fas fa-inbox"></i>
+                            <p>Belum ada riwayat stor</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="wd-page" id="wdPage">
+        <div id="wdPageMain" class="wd-page-inner active">
+            <div class="wd-header">
+                <div class="wd-header-left">
+                    <button class="back-btn" onclick="closeWithdraw()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2>Tarik Dana</h2>
+                </div>
+                <div class="wd-header-right">
+                    <button class="icon-btn" onclick="openWdHistory()" title="Riwayat">
+                        <i class="fas fa-clock-rotate-left"></i>
+                    </button>
+                    <button class="icon-btn" onclick="openGuideModal()" title="Bantuan">
+                        <i class="fas fa-circle-question"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="wd-card">
+                <div class="wd-card-title">
+                    <div class="wd-card-title-left">
+                        <span class="bar"></span>
+                        <span>Saldo yang Dapat Ditarik</span>
+                    </div>
+                    <div class="wd-card-title-right">Biaya penarikan <span id="wdFeePercent">5%</span></div>
+                </div>
+                <div class="wd-balance-big" id="wdBalanceBig">Rp 0</div>
+                <div class="wd-balance-sub">Saldo Uang Tunai <strong id="wdBalanceSub">0</strong></div>
+
+                <div class="wd-input-wrap">
+                    <span class="rp">Rp</span>
+                    <input type="number" id="wdAmountInput" placeholder="Masukkan jumlah penarikan (min Rp 20.000)">
+                </div>
+                <div class="wd-hint-yellow">
+                    <i class="fas fa-asterisk" style="font-size:8px;"></i>
+                    Jumlah penarikan harus kelipatan Rp 1.000
+                </div>
+            </div>
+
+            <div class="wd-card">
+                <div class="wd-card-title">
+                    <div class="wd-card-title-left">
+                        <span class="bar"></span>
+                        <span>Pilih E-Wallet Tujuan</span>
+                    </div>
+                    <div class="wd-card-title-right" id="wdWalletCount">0/2</div>
+                </div>
+
+                <div id="wdWalletList" class="wd-wallet-list"></div>
+
+                <div class="wd-add-wallet" onclick="openAddWallet()">
+                    <span class="plus">+</span>
+                    <span>Tambah E-Wallet</span>
+                </div>
+            </div>
+
+            <div class="wd-summary">
+                <span>Jumlah penarikan</span>
+                <span class="val empty" id="wdSummaryAmount">-</span>
+            </div>
+            <div class="wd-summary">
+                <span>Biaya penarikan <span id="wdFeePercent2">5%</span></span>
+                <span class="val empty" id="wdSummaryFee">-</span>
+            </div>
+
+            <button class="wd-submit-btn" id="wdSubmitBtn" onclick="submitWithdraw()">
+                Ajukan Penarikan
+            </button>
+
+            <div class="wd-note">
+                Dana akan masuk ke e-wallet dalam 1-3 hari kerja setelah disetujui admin
+            </div>
+        </div>
+
+        <div id="wdPageAdd" class="wd-page-inner">
+            <div class="wd-header">
+                <div class="wd-header-left">
+                    <button class="back-btn" onclick="closeAddWallet()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2 id="wdAddTitle">Tambah E-Wallet</h2>
+                </div>
+            </div>
+
+            <div class="wd-card">
+                <div class="wd-form-group">
+                    <label>Pilih E-Wallet</label>
+                    <div class="select-wrap">
+                        <select id="wdMethodSelect">
+                            <option value="">Pilih</option>
+                            <option value="dana">DANA</option>
+                            <option value="gopay">GoPay</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="wd-form-group">
+                    <label>Nomor E-Wallet</label>
+                    <input type="tel" id="wdPhoneInput" placeholder="Masukkan akun e-wallet">
+                    <div class="hint-yellow">* Nomor e-wallet ditampilkan lengkap</div>
+                </div>
+
+                <div class="wd-form-group">
+                    <label>Nama Pemilik E-Wallet</label>
+                    <input type="text" id="wdNameInput" placeholder="Masukkan nama asli e-wallet">
+                    <div class="hint-yellow">* Harus sama dengan nama terdaftar di e-wallet</div>
+                </div>
+            </div>
+
+            <button class="wd-save-btn" id="wdSaveBtn" onclick="saveWallet()">
+                Simpan E-Wallet
+            </button>
+
+            <div class="wd-note">
+                Data hanya digunakan untuk menerima dana penarikan
+            </div>
+        </div>
+
+        <div id="wdPageHistory" class="wd-page-inner">
+            <div class="wd-header">
+                <div class="wd-header-left">
+                    <button class="back-btn" onclick="closeWdHistory()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h2>Riwayat Penarikan</h2>
+                </div>
+            </div>
+
+            <div id="wdHistoryList"></div>
+        </div>
+    </div>
+
+    <div class="profile-page" id="profilePage">
+        <div class="wd-header">
+            <div class="wd-header-left">
+                <button class="back-btn" onclick="closeProfile()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h2>Profil Saya</h2>
+            </div>
+        </div>
+
+        <div class="profile-hero">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <div class="profile-name" id="profileName">User</div>
+            <div class="profile-username" id="profileUsername">@user</div>
+            <div class="profile-badges">
+                <span class="profile-badge active"><i class="fas fa-circle" style="font-size:8px;"></i> Aktif</span>
+                <span class="profile-badge"><i class="fas fa-calendar"></i> <span id="profileJoined">-</span></span>
+            </div>
+        </div>
+
+        <div class="profile-stat-grid">
+            <div class="profile-stat-card">
+                <div class="ico yellow"><i class="fas fa-envelope"></i></div>
+                <div class="num" id="profileStatStor">0</div>
+                <div class="lbl">Total Stor</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="ico green"><i class="fas fa-coins"></i></div>
+                <div class="num" id="profileStatEarning">Rp 0</div>
+                <div class="lbl">Total Earning</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="ico purple"><i class="fas fa-hand-holding-usd"></i></div>
+                <div class="num" id="profileStatWithdraw">0</div>
+                <div class="lbl">Total WD</div>
+            </div>
+            <div class="profile-stat-card">
+                <div class="ico blue"><i class="fas fa-wallet"></i></div>
+                <div class="num" id="profileStatBalance">Rp 0</div>
+                <div class="lbl">Saldo</div>
+            </div>
+        </div>
+
+        <div class="profile-menu">
+            <div class="profile-menu-item" onclick="openChangePasswordModal()">
+                <div class="icon yellow"><i class="fas fa-lock"></i></div>
+                <div class="content">
+                    <div class="title">Ganti Password</div>
+                    <div class="desc">Ubah password akun kamu</div>
+                </div>
+                <div class="arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+
+            <div class="profile-menu-item" onclick="openEditPhoneModal()">
+                <div class="icon blue"><i class="fab fa-whatsapp"></i></div>
+                <div class="content">
+                    <div class="title">Edit Nomor WhatsApp</div>
+                    <div class="desc">Update nomor kontak kamu</div>
+                </div>
+                <div class="arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+
+            <div class="profile-menu-item" onclick="openChangeEmailModal()">
+                <div class="icon purple"><i class="fas fa-envelope"></i></div>
+                <div class="content">
+                    <div class="title">Edit Email</div>
+                    <div class="desc">Ubah alamat email aktif</div>
+                </div>
+                <div class="arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+
+            <div class="profile-menu-item" onclick="openDeleteAccountModal()">
+                <div class="icon red"><i class="fas fa-user-slash"></i></div>
+                <div class="content">
+                    <div class="title" style="color:#ef4444;">Hapus Akun</div>
+                    <div class="desc">Hapus akun kamu permanen</div>
+                </div>
+                <div class="arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
+        </div>
+
+        <div class="wd-note">
+            🔒 Data kamu aman dan terenkripsi
+        </div>
+    </div>
+
+    <div class="rules-page" id="rulesPage">
+        <div class="rules-header">
+            <div class="rules-header-left">
+                <button class="back-btn" onclick="closeRules()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="titles">
+                    <h2>Rules Platform</h2>
+                    <p>Aturan setoran Gmail</p>
+                </div>
+            </div>
+            <div class="rules-header-right">
+                <button class="keluar-btn" onclick="logout()">
+                    <i class="fas fa-right-from-bracket"></i> Keluar
+                </button>
+            </div>
+        </div>
+
+        <div class="rules-card">
+            <div class="rules-card-head">
+                <div class="icon-box">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="head-txt">
+                    <div class="eyebrow">Wajib Dibaca</div>
+                    <h3>Rules Platform</h3>
+                </div>
+            </div>
+
+            <ol class="rules-list">
+                <li><span class="num">1.</span><span>Gunakan akun <strong>baru</strong> sesuai format.</span></li>
+                <li><span class="num">2.</span><span><strong>Dilarang</strong> setor akun bekas.</span></li>
+                <li><span class="num">3.</span><span>Tidak menerima akun <strong>capcha</strong>.</span></li>
+                <li>
+                    <span class="num">4.</span>
+                    <span>
+                        Nama gmail diakhiri dengan kata <strong>zaxzz</strong>.
+                        <span class="example-block">
+                            Contoh :<br>
+                            anjaykamuzaxzz@gmail.com<br>
+                            kamuituzaxzz276@gmail.com
+                        </span>
+                    </span>
+                </li>
+                <li><span class="num">5.</span><span>Limit harian mengikuti pengaturan keuangan.</span></li>
+                <li><span class="num">6.</span><span>Reward masuk setelah admin verifikasi.</span></li>
+                <li><span class="num">7.</span><span>Pelanggaran dapat berujung <strong>suspend</strong>.</span></li>
+            </ol>
+        </div>
+
+        <div class="rules-lanjut" onclick="closeRules()">
+            <div class="rules-lanjut-left">
+                <div class="ico">
+                    <i class="fas fa-paper-plane"></i>
+                </div>
+                <div class="txt">
+                    <div class="title">Sudah paham? Lanjut setor</div>
+                    <div class="sub">Kembali ke halaman Stor</div>
+                </div>
+            </div>
+            <div class="arrow">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon yellow">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Konfirmasi Penarikan</h3>
+                    <p>Periksa kembali data penarikan kamu</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-detail">
+                    <div class="modal-detail-row">
+                        <span class="lbl">Metode</span>
+                        <span class="val method" id="confirmMethod">DANA</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Nomor Tujuan</span>
+                        <span class="val" id="confirmPhone">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Nama Penerima</span>
+                        <span class="val" id="confirmName">-</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Jumlah Penarikan</span>
+                        <span class="val amount" id="confirmAmount">Rp 0</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Fee</span>
+                        <span class="val fee" id="confirmFee">-Rp 0</span>
+                    </div>
+                    <div class="modal-detail-row">
+                        <span class="lbl">Total Potong Saldo</span>
+                        <span class="val total" id="confirmTotal">Rp 0</span>
+                    </div>
+                </div>
+
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>Pastikan data sudah benar. Setelah diajukan, penarikan tidak dapat dibatalkan sendiri dan harus menunggu ACC admin.</span>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeConfirmModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary" onclick="doSubmitWithdraw()">
+                    <i class="fas fa-paper-plane"></i> Ajukan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon blue">
+                    <i class="fas fa-circle-question"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Panduan Penarikan</h3>
+                    <p>Cara tarik saldo ke e-wallet</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <div class="guide-step">
+                    <div class="guide-step-num">1</div>
+                    <div class="guide-step-content">
+                        <strong>Pilih E-Wallet Tujuan</strong>
+                        <span>Klik salah satu e-wallet yang sudah kamu simpan, atau tambah baru kalau belum ada. Maksimal <code>2 e-wallet</code>.</span>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">2</div>
+                    <div class="guide-step-content">
+                        <strong>Masukkan Jumlah Penarikan</strong>
+                        <span>Minimal <code>Rp 20.000</code> dan harus kelipatan <code>Rp 1.000</code>. Saldo harus cukup termasuk fee.</span>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">3</div>
+                    <div class="guide-step-content">
+                        <strong>Ajukan Penarikan</strong>
+                        <span>Klik tombol <code>Ajukan Penarikan</code>, lalu periksa kembali detail di modal konfirmasi.</span>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">4</div>
+                    <div class="guide-step-content">
+                        <strong>Tunggu ACC Admin</strong>
+                        <span>Admin akan memproses permintaan kamu dalam <code>1-3 hari kerja</code>. Saldo akan otomatis dipotong setelah di-ACC.</span>
+                    </div>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-num">5</div>
+                    <div class="guide-step-content">
+                        <strong>Dana Masuk E-Wallet</strong>
+                        <span>Setelah di-ACC, dana dikirim ke e-wallet tujuan. Cek riwayat penarikan buat liat status terkini.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="modal-btn primary" onclick="closeGuideModal()">
+                    <i class="fas fa-check"></i> Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon yellow">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Ganti Password</h3>
+                    <p>Masukkan password lama dan baru</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-input">
+                    <label>Password Lama</label>
+                    <input type="password" id="oldPassword" placeholder="Masukkan password lama">
+                </div>
+                <div class="modal-input">
+                    <label>Password Baru</label>
+                    <input type="password" id="newPassword" placeholder="Minimal 6 karakter">
+                </div>
+                <div class="modal-input">
+                    <label>Konfirmasi Password Baru</label>
+                    <input type="password" id="confirmNewPassword" placeholder="Ulangi password baru">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeChangePasswordModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary" onclick="confirmChangePassword()">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editPhoneModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon blue">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Edit Nomor WhatsApp</h3>
+                    <p>Update nomor kontak kamu</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-input">
+                    <label>Nomor WhatsApp Baru</label>
+                    <input type="tel" id="newPhone" placeholder="08xxxxxxxxxx">
+                    <div class="hint">Gunakan format 08xxxxxxxxxx</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeEditPhoneModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary" onclick="confirmEditPhone()">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="changeEmailModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon purple">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Edit Email</h3>
+                    <p>Ubah alamat email aktif kamu</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-input">
+                    <label>Email Baru</label>
+                    <input type="email" id="newEmail" placeholder="nama@email.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeChangeEmailModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn primary" onclick="confirmChangeEmail()">
+                    <i class="fas fa-save"></i> Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteAccountModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-icon red">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <div class="modal-title">
+                    <h3>Hapus Akun Permanen</h3>
+                    <p>Tindakan ini tidak bisa dibatalkan</p>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-warning">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span>Semua data kamu akan <strong>dihapus permanen</strong>: akun, saldo, riwayat stor, dan riwayat penarikan. Kamu tidak bisa login lagi setelah ini.</span>
+                </div>
+                <div class="modal-input">
+                    <label>Ketik <strong id="deleteAccountConfirmWord">-</strong> untuk konfirmasi</label>
+                    <input type="text" id="deleteAccountConfirmInput" placeholder="Ketik username di sini...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary" onclick="closeDeleteAccountModal()">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+                <button class="modal-btn danger" id="deleteAccountBtn" onclick="confirmDeleteAccount()" disabled>
+                    <i class="fas fa-user-slash"></i> Hapus Akun
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-stack" id="toastStack"></div>
+
+    <script>
+        // ============================================
+        // ZAXXZ MAIL — USER APP v9 (SUPABASE INTEGRATED)
+        // ============================================
+
+        const SUPABASE_URL = 'https://zdkediotcgptxfrrytyl.supabase.co/rest/v1/';
+        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpka2VkaW90Y2dwdHhmcnJ5dHlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4OTYwNDksImV4cCI6MjEwNzQ3MjA0OX0.hVMPTYk-nT88OAFRSzPF2sLHGfN8rgegxYetwAmh_2w';
+
+        const SB_HEADERS = {
+            'apikey': SUPABASE_ANON,
+            'Authorization': 'Bearer ' + SUPABASE_ANON,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+        };
+
+        async function sbFetch(path, options = {}) {
+            const url = SUPABASE_URL + path;
+            const opts = {
+                ...options,
+                headers: { ...SB_HEADERS, ...(options.headers || {}) }
+            };
+            try {
+                const res = await fetch(url, opts);
+                const text = await res.text();
+                let data = null;
+                if (text) { try { data = JSON.parse(text); } catch { data = text; } }
+                if (!res.ok) {
+                    console.error('SB error:', res.status, data);
+                    return { ok: false, status: res.status, data };
+                }
+                return { ok: true, status: res.status, data };
+            } catch (err) {
+                console.error('SB fetch error:', err);
+                return { ok: false, status: 0, data: null, error: err.message };
+            }
+        }
+
+        // ============================================
+        // DB LAYER — Supabase primary, localStorage fallback
+        // ============================================
+        const DB = {
+            get(k, d = null) {
+                try { const v = localStorage.getItem('zaxzz_' + k); return v ? JSON.parse(v) : d; }
+                catch { return d; }
+            },
+            set(k, v) { localStorage.setItem('zaxzz_' + k, JSON.stringify(v)); },
+            del(k) { localStorage.removeItem('zaxzz_' + k); }
+        };
+
+        // CACHE (biar UI tetap cepet, sambil sync ke cloud)
+        let cachedUser = null;
+        let cachedSettings = null;
+        let cachedStor = [];
+        let cachedWithdraws = [];
+
+        async function sbGetUserByUsername(username) {
+            const r = await sbFetch(`/users?username=eq.${encodeURIComponent(username)}&limit=1`);
+            if (!r.ok || !Array.isArray(r.data)) return null;
+            return r.data[0] || null;
+        }
+
+        async function sbGetUserByEmail(email) {
+            const r = await sbFetch(`/users?email=eq.${encodeURIComponent(email)}&limit=1`);
+            if (!r.ok || !Array.isArray(r.data)) return null;
+            return r.data[0] || null;
+        }
+
+        async function sbGetUserById(id) {
+            const r = await sbFetch(`/users?id=eq.${id}&limit=1`);
+            if (!r.ok || !Array.isArray(r.data)) return null;
+            return r.data[0] || null;
+        }
+
+        async function sbCreateUser(user) {
+            // Cek dulu apakah username/email udah ada
+            const existU = await sbGetUserByUsername(user.username);
+            if (existU) return { ok: false, reason: 'username' };
+            const existE = await sbGetUserByEmail(user.email);
+            if (existE) return { ok: false, reason: 'email' };
+
+            const r = await sbFetch('/users', {
+                method: 'POST',
+                body: JSON.stringify(user)
+            });
+            if (!r.ok) return { ok: false, reason: 'server', error: r.data };
+            return { ok: true, data: Array.isArray(r.data) ? r.data[0] : r.data };
+        }
+
+        async function sbUpdateUser(id, patch) {
+            const r = await sbFetch(`/users?id=eq.${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify(patch)
+            });
+            if (!r.ok) return { ok: false, data: r.data };
+            return { ok: true, data: Array.isArray(r.data) ? r.data[0] : r.data };
+        }
+
+        async function sbGetSettings() {
+            const r = await sbFetch('/settings?id=eq.1&limit=1');
+            if (!r.ok || !Array.isArray(r.data) || r.data.length === 0) {
+                return { pricePerGmail: 3800, withdrawFee: 5, minWithdraw: 20000, storeName: 'Zaxzz Mail' };
+            }
+            return r.data[0];
+        }
+
+        async function sbGetStorByUser(userId) {
+            const r = await sbFetch(`/stor?user_id=eq.${userId}&order=submitted.desc`);
+            if (!r.ok || !Array.isArray(r.data)) return [];
+            return r.data;
+        }
+
+        async function sbCreateStor(items) {
+            const r = await sbFetch('/stor', {
+                method: 'POST',
+                body: JSON.stringify(items)
+            });
+            if (!r.ok) return { ok: false, data: r.data };
+            return { ok: true, data: r.data };
+        }
+
+        async function sbGetWithdrawsByUser(userId) {
+            const r = await sbFetch(`/withdraws?user_id=eq.${userId}&order=requested_at.desc`);
+            if (!r.ok || !Array.isArray(r.data)) return [];
+            return r.data;
+        }
+
+        async function sbCreateWithdraw(wd) {
+            const r = await sbFetch('/withdraws', {
+                method: 'POST',
+                body: JSON.stringify(wd)
+            });
+            if (!r.ok) return { ok: false, data: r.data };
+            return { ok: true, data: Array.isArray(r.data) ? r.data[0] : r.data };
+        }
+
+        // ============================================
+        // HELPERS
+        // ============================================
+        function currentSessionUser() { return DB.get('session'); }
+
+        function isUserTyping() {
+            const activeEl = document.activeElement;
+            if (!activeEl) return false;
+            if (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA' && activeEl.tagName !== 'SELECT') return false;
+            return true;
+        }
+
+        function showAuth() {
+            document.getElementById('authView').classList.remove('hidden');
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('wdPage').classList.remove('active');
+            document.getElementById('profilePage').classList.remove('active');
+            document.getElementById('rulesPage').classList.remove('active');
+        }
+
+        function showDashboard() {
+            document.getElementById('authView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('active');
+            document.getElementById('wdPage').classList.remove('active');
+            document.getElementById('profilePage').classList.remove('active');
+            document.getElementById('rulesPage').classList.remove('active');
+            initDashboard();
+        }
+
+        function forceLogout(reason = 'Akun kamu telah dihapus oleh admin.') {
+            if (window._dashInterval) { clearInterval(window._dashInterval); window._dashInterval = null; }
+            DB.del('session');
+            alert('⚠️ ' + reason);
+            window.location.reload();
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        (async function init() {
+            try {
+                // Cek session
+                const session = DB.get('session');
+                if (session) {
+                    // Verifikasi user masih ada di DB
+                    const freshUser = await sbGetUserById(session.id);
+                    if (!freshUser) {
+                        DB.del('session');
+                        showAuth();
+                        return;
+                    }
+                    if (freshUser.banned) {
+                        DB.del('session');
+                        showAuth();
+                        showAlert('Akun kamu sedang diblokir. Hubungi admin.');
+                        return;
+                    }
+                    DB.set('session', freshUser);
+                    if (freshUser.role === 'admin') {
+                        // Admin lewat admin.html aja
+                        fetch('admin.html', { method: 'HEAD' })
+                            .then(r => r.ok ? window.location.href = 'admin.html' : showDashboard())
+                            .catch(() => showDashboard());
+                    } else {
+                        showDashboard();
+                    }
+                } else {
+                    showAuth();
+                }
+            } catch (e) {
+                console.error('Init error:', e);
+                showAuth();
+            }
+        })();
+
+        // ============================================
+        // SWITCHER & UI
+        // ============================================
+        function switchMode(mode) {
+            const switcher = document.getElementById('switcher');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const btnLogin = document.getElementById('btnLogin');
+            const btnRegister = document.getElementById('btnRegister');
+            const formTitle = document.getElementById('formTitle');
+            const formSubtitle = document.getElementById('formSubtitle');
+
+            hideAlert();
+
+            if (mode === 'login') {
+                switcher.dataset.active = 'login';
+                btnLogin.classList.add('active');
+                btnRegister.classList.remove('active');
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                formTitle.textContent = 'Selamat datang kembali';
+                formSubtitle.textContent = 'Masuk ke akun kamu untuk mulai stor Gmail';
+            } else {
+                switcher.dataset.active = 'register';
+                btnRegister.classList.add('active');
+                btnLogin.classList.remove('active');
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                formTitle.textContent = 'Buat akun baru';
+                formSubtitle.textContent = 'Gratis, cepat, dan tanpa biaya admin';
+            }
+        }
+
+        function togglePw(id, btn) {
+            const input = document.getElementById(id);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        document.getElementById('regPass')?.addEventListener('input', function() {
+            const val = this.value;
+            const strength = document.getElementById('strength');
+            const strengthText = document.getElementById('strengthText');
+
+            if (!val) { strength.classList.remove('show'); return; }
+            strength.classList.add('show');
+
+            let level = 0;
+            if (val.length >= 6) level++;
+            if (val.length >= 10) level++;
+            if (/[A-Z]/.test(val) && /[a-z]/.test(val)) level++;
+            if (/\d/.test(val) || /[^A-Za-z0-9]/.test(val)) level++;
+
+            strength.dataset.level = level;
+            const labels = ['', 'Lemah', 'Cukup', 'Kuat', 'Sangat kuat'];
+            strengthText.textContent = labels[level] || 'Kekuatan password';
+        });
+
+        function showAlert(msg, type = 'error') {
+            const box = document.getElementById('alertBox');
+            box.className = 'alert ' + type + ' show';
+            box.querySelector('i').className = type === 'success' ? 'fas fa-circle-check' : 'fas fa-circle-exclamation';
+            document.getElementById('alertText').textContent = msg;
+            clearTimeout(box._t);
+            box._t = setTimeout(hideAlert, 4000);
+        }
+        function hideAlert() { document.getElementById('alertBox').classList.remove('show'); }
+
+        function setFieldError(inputId, errId, msg) {
+            const input = document.getElementById(inputId);
+            const err = document.getElementById(errId);
+            if (msg) {
+                input.classList.add('invalid');
+                err.querySelector('span').textContent = msg;
+                err.classList.add('show');
+            } else {
+                input.classList.remove('invalid');
+                err.classList.remove('show');
+            }
+        }
+
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = loading;
+            btn.classList.toggle('loading', loading);
+        }
+
+        function showToast(msg, type = 'info') {
+            const stack = document.getElementById('toastStack');
+            const t = document.createElement('div');
+            t.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '');
+            t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-circle-check' : type === 'error' ? 'fa-circle-xmark' : type === 'warning' ? 'fa-triangle-exclamation' : 'fa-circle-info'}"></i> ${msg}`;
+            stack.appendChild(t);
+            setTimeout(() => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(10px)';
+                setTimeout(() => t.remove(), 300);
+            }, 3000);
+        }
+
+        // ============================================
+        // LOGIN
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value;
+
+            if (!username || !password) { showAlert('Username dan password wajib diisi.'); return; }
+
+            setLoading('loginBtn', true);
+
+            try {
+                const user = await sbGetUserByUsername(username);
+                if (!user || user.password !== password) {
+                    setLoading('loginBtn', false);
+                    showAlert('Username atau password salah. Coba lagi.');
+                    return;
+                }
+                if (user.banned) {
+                    setLoading('loginBtn', false);
+                    showAlert('Akun kamu sedang diblokir. Hubungi admin.');
+                    return;
+                }
+
+                DB.set('session', user);
+                setLoading('loginBtn', false);
+
+                if (user.role === 'admin') {
+                    showToast('Login sebagai Admin', 'success');
+                    try {
+                        const r = await fetch('admin.html', { method: 'HEAD' });
+                        if (r.ok) window.location.href = 'admin.html';
+                        else showDashboard();
+                    } catch { showDashboard(); }
+                } else {
+                    showToast('Login berhasil!', 'success');
+                    showDashboard();
+                }
+            } catch (err) {
+                setLoading('loginBtn', false);
+                showAlert('Gagal terhubung ke server. Coba lagi.');
+                console.error(err);
+            }
+        });
+
+        // ============================================
+        // REGISTER
+        // ============================================
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideAlert();
+
+            const username = document.getElementById('regUser').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPass').value;
+            const agree = document.getElementById('agreeTerms').checked;
+
+            let hasError = false;
+
+            if (username.length < 3) { setFieldError('regUser', 'errUser', 'Username minimal 3 karakter.'); hasError = true; }
+            else if (!/^[a-zA-Z0-9_]+$/.test(username)) { setFieldError('regUser', 'errUser', 'Hanya huruf, angka, dan underscore.'); hasError = true; }
+            else setFieldError('regUser', 'errUser', '');
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setFieldError('regEmail', 'errEmail', 'Format email tidak valid.'); hasError = true; }
+            else setFieldError('regEmail', 'errEmail', '');
+
+            if (!/^08\d{8,12}$/.test(phone.replace(/[\s-]/g, ''))) { setFieldError('regPhone', 'errPhone', 'Gunakan format 08xxxxxxxxxx.'); hasError = true; }
+            else setFieldError('regPhone', 'errPhone', '');
+
+            if (password.length < 6) { showAlert('Password minimal 6 karakter.'); hasError = true; }
+            if (!agree) { showAlert('Kamu harus menyetujui Syarat & Ketentuan.'); hasError = true; }
+
+            if (hasError) return;
+
+            setLoading('registerBtn', true);
+
+            try {
+                const newUser = {
+                    username, email, phone, password,
+                    role: 'user',
+                    balance: 0,
+                    total_stor: 0,
+                    total_earning: 0,
+                    banned: false,
+                    wallets: [],
+                    joined: new Date().toISOString()
+                };
+
+                const res = await sbCreateUser(newUser);
+                if (!res.ok) {
+                    setLoading('registerBtn', false);
+                    if (res.reason === 'username') setFieldError('regUser', 'errUser', 'Username sudah dipakai.');
+                    else if (res.reason === 'email') setFieldError('regEmail', 'errEmail', 'Email sudah terdaftar.');
+                    else showAlert('Gagal mendaftar. Coba lagi.');
+                    return;
+                }
+
+                DB.set('session', res.data);
+                setLoading('registerBtn', false);
+                showToast('Akun berhasil dibuat!', 'success');
+                showDashboard();
+            } catch (err) {
+                setLoading('registerBtn', false);
+                showAlert('Gagal terhubung ke server. Coba lagi.');
+                console.error(err);
+            }
+        });
+
+        // ============================================
+        // DASHBOARD INIT
+        // ============================================
+        async function initDashboard() {
+            const session = DB.get('session');
+            if (!session) { showAuth(); return; }
+
+            document.getElementById('welcomeName').textContent = session.username;
+
+            await refreshAll();
+
+            if (window._dashInterval) clearInterval(window._dashInterval);
+            window._dashInterval = setInterval(async () => {
+                if (isUserTyping()) return;
+                await refreshAll();
+            }, 5000);
+        }
+
+        async function refreshAll() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            // Refresh user dari DB
+            const freshUser = await sbGetUserById(session.id);
+            if (!freshUser) { forceLogout('Akun kamu telah dihapus oleh admin.'); return; }
+            if (freshUser.banned) { forceLogout('Akun kamu telah diblokir oleh admin.'); return; }
+
+            DB.set('session', freshUser);
+            cachedUser = freshUser;
+
+            // Settings
+            cachedSettings = await sbGetSettings();
+
+            // Stor & Withdraws
+            cachedStor = await sbGetStorByUser(freshUser.id);
+            cachedWithdraws = await sbGetWithdrawsByUser(freshUser.id);
+
+            // Update UI
+            updateDashboardUI(freshUser);
+            renderHistory();
+        }
+
+        function updateDashboardUI(user) {
+            const settings = cachedSettings || { pricePerGmail: 3800, withdrawFee: 5, minWithdraw: 20000 };
+            document.getElementById('pricePerGmail').textContent = 'Rp ' + (settings.pricePerGmail || 3800).toLocaleString('id-ID');
+
+            const balance = user.balance || 0;
+            document.getElementById('navBalance').textContent = 'Rp ' + balance.toLocaleString('id-ID');
+            document.getElementById('statBalance').textContent = 'Rp ' + balance.toLocaleString('id-ID');
+            document.getElementById('statStor').textContent = (cachedStor || []).length;
+
+            const pending = (cachedStor || []).filter(s => s.status === 'pending').length;
+            const received = (cachedStor || []).filter(s => s.status === 'received').length;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statReceived').textContent = received;
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('storHistory');
+            const stor = (cachedStor || []).slice(0, 20);
+
+            if (stor.length === 0) {
+                container.innerHTML = `<div class="empty"><i class="fas fa-inbox"></i><p>Belum ada riwayat stor</p></div>`;
+                return;
+            }
+
+            container.innerHTML = stor.map(s => {
+                const badgeClass = s.status === 'received' ? 'success' : s.status === 'rejected' ? 'failed' : 'pending';
+                const badgeText = s.status === 'received' ? 'Diterima' : s.status === 'rejected' ? 'Ditolak' : 'Pending';
+                return `
+                    <div class="stor-item">
+                        <div class="ico"><i class="fas fa-envelope"></i></div>
+                        <div class="info">
+                            <div class="addr">${s.email}</div>
+                            <div class="meta">
+                                <span>💰 Rp ${(s.price || 0).toLocaleString('id-ID')}</span>
+                                <span>•</span>
+                                <span class="badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // STOR SUBMIT
+        // ============================================
+        document.getElementById('storForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const agreeRules = document.getElementById('agreeRules');
+            if (agreeRules && !agreeRules.checked) {
+                showToast('Ceklis dulu "Saya sudah membaca Rules Platform" ya beb~ 🗿', 'warning');
+                return;
+            }
+
+            const text = document.getElementById('storEmails').value.trim();
+            const lines = text.split('\n').filter(l => l.trim());
+
+            if (lines.length === 0) { showToast('Masukkan minimal 1 Gmail!', 'warning'); return; }
+
+            const validEmails = [];
+            let invalidCount = 0;
+
+            lines.forEach(line => {
+                const parts = line.split('|');
+                if (parts.length >= 2 && parts[0].includes('@') && parts[1].trim()) {
+                    const emailLower = parts[0].trim().toLowerCase();
+                    const isZaxzzFormat = /zaxzz\d*@gmail\.com$/i.test(emailLower) || /zaxzz@/i.test(emailLower);
+                    if (isZaxzzFormat) {
+                        validEmails.push({ email: parts[0].trim(), password: parts[1].trim() });
+                    } else {
+                        invalidCount++;
+                    }
+                } else {
+                    invalidCount++;
+                }
+            });
+
+            if (validEmails.length === 0) {
+                showToast('Format salah! Gunakan: email|password — dan wajib ada "zaxzz" sebelum @gmail', 'error');
+                return;
+            }
+
+            const session = DB.get('session');
+            if (!session) return;
+
+            const settings = cachedSettings || { pricePerGmail: 3800 };
+            const price = settings.pricePerGmail || 3800;
+
+            const items = validEmails.map(v => ({
+                user_id: session.id,
+                username: session.username,
+                email: v.email,
+                password: v.password,
+                price: price,
+                status: 'pending',
+                submitted: new Date().toISOString()
+            }));
+
+            const btn = document.getElementById('storBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+
+            try {
+                const res = await sbCreateStor(items);
+                if (!res.ok) {
+                    showToast('Gagal kirim stor. Coba lagi.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Stor';
+                    return;
+                }
+
+                // Update total_stor di user
+                const newTotal = (session.total_stor || 0) + validEmails.length;
+                await sbUpdateUser(session.id, { total_stor: newTotal });
+                session.total_stor = newTotal;
+                DB.set('session', session);
+
+                document.getElementById('storEmails').value = '';
+                document.getElementById('agreeRules').checked = false;
+
+                await refreshAll();
+
+                let msg = `${validEmails.length} Gmail berhasil dikirim!`;
+                if (invalidCount > 0) msg += ` (${invalidCount} ditolak)`;
+                showToast(msg, 'success');
+            } catch (err) {
+                showToast('Error: ' + err.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Stor';
+        });
+
+        // ============================================
+        // WITHDRAW PAGE
+        // ============================================
+        let selectedWalletId = null;
+        let pendingWithdraw = null;
+
+        function openWithdraw() {
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('wdPage').classList.add('active');
+            document.getElementById('profilePage').classList.remove('active');
+            document.getElementById('rulesPage').classList.remove('active');
+            document.getElementById('wdPageMain').classList.add('active');
+            document.getElementById('wdPageAdd').classList.remove('active');
+            document.getElementById('wdPageHistory').classList.remove('active');
+            selectedWalletId = null;
+            refreshWithdrawPage();
+        }
+
+        function closeWithdraw() {
+            document.getElementById('wdPage').classList.remove('active');
+            document.getElementById('dashboardView').classList.add('active');
+            refreshAll();
+        }
+
+        function openAddWallet() {
+            document.getElementById('wdPageMain').classList.remove('active');
+            document.getElementById('wdPageAdd').classList.add('active');
+            document.getElementById('wdPageHistory').classList.remove('active');
+            document.getElementById('wdAddTitle').textContent = 'Tambah E-Wallet';
+            document.getElementById('wdMethodSelect').value = '';
+            document.getElementById('wdPhoneInput').value = '';
+            document.getElementById('wdNameInput').value = '';
+            document.getElementById('wdSaveBtn').textContent = 'Simpan E-Wallet';
+            document.getElementById('wdSaveBtn').dataset.editId = '';
+        }
+
+        function closeAddWallet() {
+            document.getElementById('wdPageAdd').classList.remove('active');
+            document.getElementById('wdPageMain').classList.add('active');
+            refreshWithdrawPage();
+        }
+
+        function openWdHistory() {
+            document.getElementById('wdPageMain').classList.remove('active');
+            document.getElementById('wdPageAdd').classList.remove('active');
+            document.getElementById('wdPageHistory').classList.add('active');
+            renderWdHistory();
+        }
+
+        function closeWdHistory() {
+            document.getElementById('wdPageHistory').classList.remove('active');
+            document.getElementById('wdPageMain').classList.add('active');
+        }
+
+        function refreshWithdrawPage() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            const user = cachedUser || session;
+            const settings = cachedSettings || { minWithdraw: 20000, withdrawFee: 5 };
+            const minWd = settings.minWithdraw || 20000;
+            const feePercent = settings.withdrawFee || 5;
+
+            document.getElementById('wdBalanceBig').textContent = 'Rp ' + (user.balance || 0).toLocaleString('id-ID');
+            document.getElementById('wdBalanceSub').textContent = (user.balance || 0).toLocaleString('id-ID');
+            document.getElementById('wdFeePercent').textContent = feePercent + '%';
+            document.getElementById('wdFeePercent2').textContent = feePercent + '%';
+            document.getElementById('wdAmountInput').placeholder = `Masukkan jumlah penarikan (min Rp ${minWd.toLocaleString('id-ID')})`;
+
+            renderWalletList(user);
+            updateSummary();
+        }
+
+        function renderWalletList(user) {
+            const container = document.getElementById('wdWalletList');
+            const wallets = user.wallets || [];
+
+            document.getElementById('wdWalletCount').textContent = wallets.length + '/2';
+
+            if (wallets.length === 0) { container.innerHTML = ''; return; }
+
+            container.innerHTML = wallets.map(w => {
+                const icoClass = w.method === 'dana' ? '' : 'gopay';
+                const ico = w.method === 'dana' ? 'fa-wallet' : 'fa-mobile-alt';
+                const isSelected = selectedWalletId === w.id;
+                const borderStyle = isSelected ? 'border: 1.5px solid #c8f000;' : '';
+                return `
+                    <div class="wd-wallet-item" style="${borderStyle}">
+                        <div class="wd-wallet-item-left" onclick="selectWallet('${w.id}')" style="cursor:pointer;flex:1;">
+                            <div class="wallet-icon ${icoClass}">
+                                <i class="fas ${ico}"></i>
+                            </div>
+                            <div class="wallet-info">
+                                <div class="name">${w.name}</div>
+                                <div class="detail">${w.method.toUpperCase()} ${w.phone}</div>
+                            </div>
+                        </div>
+                        <div class="wd-wallet-item-right">
+                            <button onclick="editWallet('${w.id}')" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="delete" onclick="deleteWallet('${w.id}')" title="Hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectWallet(walletId) {
+            selectedWalletId = (selectedWalletId === walletId) ? null : walletId;
+            const user = cachedUser || DB.get('session');
+            renderWalletList(user);
+        }
+
+        async function saveWallet() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            const method = document.getElementById('wdMethodSelect').value;
+            const phone = document.getElementById('wdPhoneInput').value.trim();
+            const name = document.getElementById('wdNameInput').value.trim();
+            const editId = document.getElementById('wdSaveBtn').dataset.editId;
+
+            if (!method) { showToast('Pilih metode e-wallet dulu!', 'warning'); return; }
+            if (!/^08\d{8,12}$/.test(phone.replace(/[\s-]/g, ''))) { showToast('Nomor tidak valid! Gunakan format 08xxxxxxxxxx.', 'error'); return; }
+            if (name.length < 3) { showToast('Nama minimal 3 karakter!', 'warning'); return; }
+
+            const user = cachedUser || session;
+            let wallets = user.wallets || [];
+
+            if (editId) {
+                wallets = wallets.map(w => w.id === editId ? { ...w, method, phone, name } : w);
+                showToast('✅ E-Wallet berhasil diperbarui!', 'success');
+            } else {
+                if (wallets.length >= 2) { showToast('Maksimal 2 e-wallet! Hapus salah satu dulu.', 'warning'); return; }
+                wallets.push({
+                    id: 'W' + Date.now().toString(36).toUpperCase(),
+                    method, phone, name
+                });
+                showToast('✅ E-Wallet berhasil disimpan!', 'success');
+            }
+
+            const res = await sbUpdateUser(session.id, { wallets });
+            if (!res.ok) { showToast('Gagal simpan e-wallet.', 'error'); return; }
+
+            if (cachedUser) cachedUser.wallets = wallets;
+            const s = DB.get('session');
+            s.wallets = wallets;
+            DB.set('session', s);
+
+            closeAddWallet();
+        }
+
+        function editWallet(walletId) {
+            const user = cachedUser || DB.get('session');
+            const wallet = (user.wallets || []).find(w => w.id === walletId);
+            if (!wallet) return;
+
+            document.getElementById('wdPageMain').classList.remove('active');
+            document.getElementById('wdPageAdd').classList.add('active');
+            document.getElementById('wdAddTitle').textContent = 'Edit E-Wallet';
+            document.getElementById('wdMethodSelect').value = wallet.method;
+            document.getElementById('wdPhoneInput').value = wallet.phone;
+            document.getElementById('wdNameInput').value = wallet.name;
+            document.getElementById('wdSaveBtn').textContent = 'Perbarui E-Wallet';
+            document.getElementById('wdSaveBtn').dataset.editId = walletId;
+        }
+
+        async function deleteWallet(walletId) {
+            if (!confirm('Hapus e-wallet ini?')) return;
+
+            const session = DB.get('session');
+            const user = cachedUser || session;
+            const wallets = (user.wallets || []).filter(w => w.id !== walletId);
+
+            const res = await sbUpdateUser(session.id, { wallets });
+            if (!res.ok) { showToast('Gagal hapus e-wallet.', 'error'); return; }
+
+            if (cachedUser) cachedUser.wallets = wallets;
+            const s = DB.get('session');
+            s.wallets = wallets;
+            DB.set('session', s);
+
+            if (selectedWalletId === walletId) selectedWalletId = null;
+
+            renderWalletList({ ...user, wallets });
+            showToast('🗑️ E-Wallet dihapus!', 'warning');
+        }
+
+        function updateSummary() {
+            const amountInput = document.getElementById('wdAmountInput');
+            const amount = parseInt(amountInput.value);
+            const settings = cachedSettings || { withdrawFee: 5 };
+            const feePercent = settings.withdrawFee || 5;
+
+            if (!amount || amount <= 0) {
+                document.getElementById('wdSummaryAmount').textContent = '-';
+                document.getElementById('wdSummaryAmount').classList.add('empty');
+                document.getElementById('wdSummaryFee').textContent = '-';
+                document.getElementById('wdSummaryFee').classList.add('empty');
+                return;
+            }
+
+            const fee = Math.round(amount * feePercent / 100);
+            document.getElementById('wdSummaryAmount').textContent = 'Rp ' + amount.toLocaleString('id-ID');
+            document.getElementById('wdSummaryAmount').classList.remove('empty');
+            document.getElementById('wdSummaryFee').textContent = 'Rp ' + fee.toLocaleString('id-ID');
+            document.getElementById('wdSummaryFee').classList.remove('empty');
+        }
+
+        document.getElementById('wdAmountInput')?.addEventListener('input', updateSummary);
+
+        function submitWithdraw() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            const user = cachedUser || session;
+            if (!selectedWalletId) { showToast('Pilih e-wallet tujuan dulu!', 'warning'); return; }
+
+            const wallet = (user.wallets || []).find(w => w.id === selectedWalletId);
+            if (!wallet) { showToast('E-Wallet tidak ditemukan!', 'error'); return; }
+
+            const settings = cachedSettings || { minWithdraw: 20000, withdrawFee: 5 };
+            const minWd = settings.minWithdraw || 20000;
+            const feePercent = settings.withdrawFee || 5;
+
+            const amount = parseInt(document.getElementById('wdAmountInput').value);
+            if (!amount || amount < minWd) { showToast(`Minimal penarikan Rp ${minWd.toLocaleString('id-ID')}!`, 'warning'); return; }
+            if (amount % 1000 !== 0) { showToast('Jumlah penarikan harus kelipatan Rp 1.000!', 'warning'); return; }
+
+            const fee = Math.round(amount * feePercent / 100);
+            const total = amount + fee;
+
+            if (total > (user.balance || 0)) {
+                showToast(`Saldo tidak cukup! Butuh Rp ${total.toLocaleString('id-ID')} (termasuk fee ${feePercent}%)`, 'error');
+                return;
+            }
+
+            pendingWithdraw = {
+                walletId: wallet.id,
+                method: wallet.method,
+                phone: wallet.phone,
+                name: wallet.name,
+                amount: amount,
+                fee: fee,
+                total: total
+            };
+
+            openConfirmModal(pendingWithdraw);
+        }
+
+        function openConfirmModal(data) {
+            document.getElementById('confirmMethod').textContent = data.method.toUpperCase();
+            document.getElementById('confirmMethod').className = 'val method' + (data.method === 'gopay' ? ' gopay' : '');
+            document.getElementById('confirmPhone').textContent = data.phone;
+            document.getElementById('confirmName').textContent = data.name;
+            document.getElementById('confirmAmount').textContent = 'Rp ' + data.amount.toLocaleString('id-ID');
+            document.getElementById('confirmFee').textContent = '-Rp ' + data.fee.toLocaleString('id-ID');
+            document.getElementById('confirmTotal').textContent = 'Rp ' + data.total.toLocaleString('id-ID');
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+            pendingWithdraw = null;
+        }
+
+        async function doSubmitWithdraw() {
+            if (!pendingWithdraw) return;
+
+            const session = DB.get('session');
+            if (!session) return;
+
+            const wd = {
+                id: 'P' + Date.now().toString(),
+                user_id: session.id,
+                username: session.username,
+                method: pendingWithdraw.method,
+                phone: pendingWithdraw.phone,
+                name: pendingWithdraw.name,
+                amount: pendingWithdraw.amount,
+                fee: pendingWithdraw.fee,
+                total: pendingWithdraw.total,
+                status: 'pending',
+                requested_at: new Date().toISOString()
+            };
+
+            const res = await sbCreateWithdraw(wd);
+            if (!res.ok) {
+                showToast('Gagal ajukan penarikan. Coba lagi.', 'error');
+                return;
+            }
+
+            document.getElementById('wdAmountInput').value = '';
+            updateSummary();
+            closeConfirmModal();
+            showToast(`✅ Penarikan Rp ${wd.amount.toLocaleString('id-ID')} diajukan! Tunggu ACC admin.`, 'success');
+
+            await refreshAll();
+            setTimeout(() => openWdHistory(), 500);
+        }
+
+        function renderWdHistory() {
+            const container = document.getElementById('wdHistoryList');
+            const withdraws = (cachedWithdraws || []).slice().reverse();
+
+            if (withdraws.length === 0) {
+                container.innerHTML = `
+                    <div class="wd-history-empty">
+                        <i class="fas fa-inbox"></i>
+                        <p>Belum ada riwayat penarikan</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = withdraws.map(w => {
+                const statusClass = w.status === 'accepted' ? '' : w.status === 'rejected' ? 'rejected' : 'pending';
+                const statusText = w.status === 'accepted' ? 'Sudah Dibayar' : w.status === 'rejected' ? 'Ditolak' : 'Pending';
+                const date = new Date(w.requested_at || w.requestedAt);
+                const dateStr = date.toLocaleString('id-ID', {
+                    year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit'
+                }).replace(/\./g, '-');
+
+                return `
+                    <div class="wd-history-card">
+                        <div class="wd-history-top">
+                            <div class="wd-history-order">
+                                <div class="no">
+                                    <span class="dot-icon"><i class="fas fa-square"></i></span>
+                                    No. Pesanan: ${w.id}
+                                </div>
+                                <div class="date">
+                                    <i class="fas fa-clock"></i>
+                                    ${dateStr}
+                                </div>
+                            </div>
+                            <div class="wd-history-status ${statusClass}">
+                                ${statusText}
+                            </div>
+                        </div>
+
+                        <div class="wd-history-row">
+                            <span class="lbl">Jumlah penarikan</span>
+                            <span class="val amount">Rp ${w.amount.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="wd-history-row">
+                            <span class="lbl">Fee</span>
+                            <span class="val fee">-Rp ${(w.fee || 0).toLocaleString('id-ID')}</span>
+                        </div>
+                        <div class="wd-history-row">
+                            <span class="lbl">E-Wallet Tujuan</span>
+                            <span class="val wallet">${w.method.toUpperCase()} ${w.phone}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // RULES PAGE
+        // ============================================
+        function openRules() {
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('wdPage').classList.remove('active');
+            document.getElementById('profilePage').classList.remove('active');
+            document.getElementById('rulesPage').classList.add('active');
+        }
+
+        function closeRules() {
+            document.getElementById('rulesPage').classList.remove('active');
+            document.getElementById('dashboardView').classList.add('active');
+            refreshAll();
+        }
+
+        // ============================================
+        // PROFIL PAGE
+        // ============================================
+        function openProfile() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            const user = cachedUser || session;
+
+            document.getElementById('profileAvatar').textContent = user.username.charAt(0).toUpperCase();
+            document.getElementById('profileName').textContent = user.username;
+            document.getElementById('profileUsername').textContent = '@' + user.username;
+            document.getElementById('profileJoined').textContent = new Date(user.joined).toLocaleDateString('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric'
+            });
+
+            document.getElementById('profileStatStor').textContent = (cachedStor || []).length || user.total_stor || 0;
+            document.getElementById('profileStatEarning').textContent = 'Rp ' + (user.total_earning || 0).toLocaleString('id-ID');
+            document.getElementById('profileStatBalance').textContent = 'Rp ' + (user.balance || 0).toLocaleString('id-ID');
+
+            const acceptedWd = (cachedWithdraws || []).filter(w => w.status === 'accepted');
+            document.getElementById('profileStatWithdraw').textContent = acceptedWd.length;
+
+            document.getElementById('dashboardView').classList.remove('active');
+            document.getElementById('wdPage').classList.remove('active');
+            document.getElementById('rulesPage').classList.remove('active');
+            document.getElementById('profilePage').classList.add('active');
+        }
+
+        function closeProfile() {
+            document.getElementById('profilePage').classList.remove('active');
+            document.getElementById('dashboardView').classList.add('active');
+            refreshAll();
+        }
+
+        function openChangePasswordModal() {
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            document.getElementById('changePasswordModal').classList.add('active');
+        }
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('active');
+        }
+        async function confirmChangePassword() {
+            const oldPass = document.getElementById('oldPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmNewPassword').value;
+
+            if (!oldPass || !newPass || !confirmPass) { showToast('Semua field wajib diisi!', 'warning'); return; }
+            if (newPass.length < 6) { showToast('Password baru minimal 6 karakter!', 'warning'); return; }
+            if (newPass !== confirmPass) { showToast('Konfirmasi password tidak cocok!', 'error'); return; }
+
+            const session = DB.get('session');
+            const user = cachedUser || session;
+
+            if (user.password !== oldPass) {
+                showToast('Password lama salah!', 'error');
+                return;
+            }
+
+            const res = await sbUpdateUser(session.id, { password: newPass });
+            if (!res.ok) { showToast('Gagal ganti password.', 'error'); return; }
+
+            if (cachedUser) cachedUser.password = newPass;
+            const s = DB.get('session');
+            s.password = newPass;
+            DB.set('session', s);
+
+            closeChangePasswordModal();
+            showToast('✅ Password berhasil diubah!', 'success');
+        }
+
+        function openEditPhoneModal() {
+            const user = cachedUser || DB.get('session');
+            document.getElementById('newPhone').value = user.phone || '';
+            document.getElementById('editPhoneModal').classList.add('active');
+        }
+        function closeEditPhoneModal() {
+            document.getElementById('editPhoneModal').classList.remove('active');
+        }
+        async function confirmEditPhone() {
+            const newPhone = document.getElementById('newPhone').value.trim();
+            if (!/^08\d{8,12}$/.test(newPhone.replace(/[\s-]/g, ''))) {
+                showToast('Format nomor tidak valid! Gunakan 08xxxxxxxxxx.', 'error');
+                return;
+            }
+
+            const session = DB.get('session');
+            const res = await sbUpdateUser(session.id, { phone: newPhone });
+            if (!res.ok) { showToast('Gagal ubah nomor.', 'error'); return; }
+
+            if (cachedUser) cachedUser.phone = newPhone;
+            const s = DB.get('session');
+            s.phone = newPhone;
+            DB.set('session', s);
+
+            closeEditPhoneModal();
+            showToast('✅ Nomor WhatsApp berhasil diubah!', 'success');
+        }
+
+        function openChangeEmailModal() {
+            const user = cachedUser || DB.get('session');
+            document.getElementById('newEmail').value = user.email || '';
+            document.getElementById('changeEmailModal').classList.add('active');
+        }
+        function closeChangeEmailModal() {
+            document.getElementById('changeEmailModal').classList.remove('active');
+        }
+        async function confirmChangeEmail() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+                showToast('Format email tidak valid!', 'error');
+                return;
+            }
+
+            const session = DB.get('session');
+            const existing = await sbGetUserByEmail(newEmail);
+            if (existing && existing.id !== session.id) {
+                showToast('Email sudah dipakai user lain!', 'error');
+                return;
+            }
+
+            const res = await sbUpdateUser(session.id, { email: newEmail });
+            if (!res.ok) { showToast('Gagal ubah email.', 'error'); return; }
+
+            if (cachedUser) cachedUser.email = newEmail;
+            const s = DB.get('session');
+            s.email = newEmail;
+            DB.set('session', s);
+
+            closeChangeEmailModal();
+            showToast('✅ Email berhasil diubah!', 'success');
+        }
+
+        function openDeleteAccountModal() {
+            const session = DB.get('session');
+            if (!session) return;
+            document.getElementById('deleteAccountConfirmWord').textContent = session.username;
+            document.getElementById('deleteAccountConfirmInput').value = '';
+            document.getElementById('deleteAccountBtn').disabled = true;
+            document.getElementById('deleteAccountModal').classList.add('active');
+        }
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('active');
+        }
+        document.getElementById('deleteAccountConfirmInput')?.addEventListener('input', function() {
+            const session = DB.get('session');
+            if (!session) return;
+            document.getElementById('deleteAccountBtn').disabled = this.value.trim() !== session.username;
+        });
+        async function confirmDeleteAccount() {
+            const session = DB.get('session');
+            if (!session) return;
+
+            const r1 = await sbFetch(`/stor?user_id=eq.${session.id}`, { method: 'DELETE' });
+            const r2 = await sbFetch(`/withdraws?user_id=eq.${session.id}`, { method: 'DELETE' });
+            const r3 = await sbFetch(`/users?id=eq.${session.id}`, { method: 'DELETE' });
+
+            if (!r3.ok) { showToast('Gagal hapus akun.', 'error'); return; }
+
+            DB.del('session');
+            closeDeleteAccountModal();
+            alert('✅ Akun kamu berhasil dihapus permanen. Kamu akan logout sekarang.');
+            window.location.reload();
+        }
+
+        function openGuideModal() {
+            document.getElementById('guideModal').classList.add('active');
+        }
+        function closeGuideModal() {
+            document.getElementById('guideModal').classList.remove('active');
+        }
+
+        document.getElementById('confirmModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeConfirmModal();
+        });
+        document.getElementById('guideModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeGuideModal();
+        });
+        document.getElementById('changePasswordModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeChangePasswordModal();
+        });
+        document.getElementById('editPhoneModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeEditPhoneModal();
+        });
+        document.getElementById('changeEmailModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeChangeEmailModal();
+        });
+        document.getElementById('deleteAccountModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteAccountModal();
+        });
+
+        function logout() {
+            if (!confirm('Keluar dari akun?')) return;
+            DB.del('session');
+            if (window._dashInterval) clearInterval(window._dashInterval);
+            window.location.reload();
+        }
+
+        const nextMap = { regUser: 'regEmail', regEmail: 'regPhone', regPhone: 'regPass' };
+        Object.keys(nextMap).forEach(id => {
+            document.getElementById(id)?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById(nextMap[id]).focus();
+                }
+            });
+        });
+
+        console.log('%c🔥 Zaxzz Mail — User App v9 (Supabase)', 'color:#2563eb;font-weight:bold;font-size:14px;');
+    </script>
+</body>
+</html>
